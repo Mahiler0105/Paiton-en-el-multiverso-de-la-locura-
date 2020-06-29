@@ -1,10 +1,8 @@
 # Paiton en el multiverso de la locura
 
-### Juego desarrollado con JS utilizando como framework PhaserJS
+### Juego desarrollado con JS utilizando como framework PhaserJS utilizando las tecnicas de TDD, BDD y/o ATDD
 
-### Utilizano las tecnicas de TDD, BDD y/0 ATDD
-
-### Universidad Católica de Santa Maria
+#### Universidad Católica de Santa Maria
 
 Integrantes del proyecto
 
