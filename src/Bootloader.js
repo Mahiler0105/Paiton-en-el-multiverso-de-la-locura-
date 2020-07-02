@@ -8,9 +8,13 @@ class Bootloader extends Phaser.Scene {
     this.load.path = "./assets/";
     this.load.tilemapTiledJSON("map", "primero.json");
     this.load.image("tiles", "terrain.png");
-    this.load.spritesheet("personaje1", "personaje1.png", {
-      frameWidth: 57,
-      frameHeight: 62,
+    this.load.spritesheet("personaje1", "snake.png", {
+      frameWidth: 95,
+      frameHeight: 85,
+    });
+    this.load.spritesheet("personaje2", "snake.png", {
+      frameWidth: 93,
+      frameHeight: 93,
     });
   }
   create() {
@@ -23,19 +27,47 @@ class Bootloader extends Phaser.Scene {
 
     // CONFIGURACION DE PERSONAJE
     this.jugador = this.physics.add.sprite(40, 400, "personaje1", 0);
-    this.jugador.setSize(25, 0);
+    this.jugador.setSize(75, 0);
 
     this.derecha = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.D);
     this.izquierda = this.input.keyboard.addKey(
       Phaser.Input.Keyboard.KeyCodes.A
     );
     this.arriba = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.W);
+    this.abajo = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.S);
 
     this.anims.create({
       key: "caminar",
       frames: this.anims.generateFrameNumbers("personaje1", {
         start: 1,
-        end: 8,
+        end: 12,
+      }),
+      frameRate: 10,
+    });
+
+    this.anims.create({
+      key: "saltar",
+      frames: this.anims.generateFrameNumbers("personaje1", {
+        start: 24,
+        end: 24,
+      }),
+      frameRate: 10,
+    });
+
+    this.anims.create({
+      key: "agacharse",
+      frames: this.anims.generateFrameNumbers("personaje2", {
+        start: 63,
+        end: 65,
+      }),
+      frameRate: 10,
+    });
+
+    this.anims.create({
+      key: "poder",
+      frames: this.anims.generateFrameNumbers("personaje2", {
+        start: 62,
+        end: 62,
       }),
       frameRate: 10,
     });
@@ -54,21 +86,41 @@ class Bootloader extends Phaser.Scene {
     this.jugador.setVelocityX(0);
     if (this.izquierda.isDown) {
       this.jugador.setVelocityX(-this.velocidad);
-      this.jugador.flipX = true;
+      this.jugador.flipX = false;
     } else if (this.derecha.isDown) {
       this.jugador.setVelocityX(this.velocidad);
-      this.jugador.flipX = false;
-    } else if (this.arriba.isDown && this.jugador.body.onFloor()) {
+      this.jugador.flipX = true;
+    }
+    // MECANICA VUELO
+    // else if (this.arriba.isDown) {
+    //   this.jugador.setVelocityY(this.alturaSalto);
+    // }
+    else if (this.arriba.isDown && this.jugador.body.onFloor()) {
       this.jugador.setVelocityY(this.alturaSalto);
     }
 
     if (
       (this.izquierda.isDown || this.derecha.isDown) &&
-      this.jugador.body.onFloor()
+      this.jugador.body.onFloor() &&
+      !this.abajo.isDown
     ) {
       this.jugador.anims.play("caminar", true);
-    } else if (!this.jugador.body.onFloor()) {
-      this.jugador.setFrame(9);
+    } else if (!this.jugador.body.onFloor() && !this.abajo.isDown) {
+      // this.jugador.setFrame(24);
+
+      this.jugador.anims.play("saltar", true);
+      console.log("Saltar");
+    } else if (this.abajo.isDown) {
+      if (this.abajo.isUp) {
+        console.log("nada");
+        this.jugador.anims.play("poder", true);
+      }
+      console.log("Abajo");
+      // this.jugador.anims.play("saltar", false);
+      this.jugador.anims.play("agacharse", true);
+      // } else if (this.abajo.isUp ) {
+      //   console.log("nada");
+      //   this.jugador.anims.play("poder", true);
     } else {
       this.jugador.setFrame(0);
     }
