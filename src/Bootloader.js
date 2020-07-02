@@ -3,6 +3,7 @@ class Bootloader extends Phaser.Scene {
     super("Bootloader");
     this.velocidad = 350;
     this.alturaSalto = -350;
+    this.flag = false;
   }
   preload() {
     this.load.path = "./assets/";
@@ -104,23 +105,23 @@ class Bootloader extends Phaser.Scene {
       this.jugador.body.onFloor() &&
       !this.abajo.isDown
     ) {
+      this.flag = false;
       this.jugador.anims.play("caminar", true);
     } else if (!this.jugador.body.onFloor() && !this.abajo.isDown) {
       // this.jugador.setFrame(24);
-
+      this.flag = false;
       this.jugador.anims.play("saltar", true);
       console.log("Saltar");
     } else if (this.abajo.isDown) {
-      if (this.abajo.isUp) {
-        console.log("nada");
-        this.jugador.anims.play("poder", true);
-      }
       console.log("Abajo");
+      this.flag = true;
       // this.jugador.anims.play("saltar", false);
       this.jugador.anims.play("agacharse", true);
-      // } else if (this.abajo.isUp ) {
-      //   console.log("nada");
-      //   this.jugador.anims.play("poder", true);
+    } else if (this.abajo.isUp && this.flag) {
+      this.jugador.anims.play("poder", true);
+      setTimeout(() => {
+        this.flag = false;
+      }, 1500);
     } else {
       this.jugador.setFrame(0);
     }
