@@ -15,11 +15,11 @@ class Bootloader extends Phaser.Scene {
   }
   create() {
     // CONFIGURACION DE MAPA
-    var mapa = this.make.tilemap({ key: "map" });
-    var tilesets = mapa.addTilesetImage("terrain", "tiles");
-    var foraje = mapa.createDynamicLayer("foraje", tilesets, 0, 0);
-    var solidos = mapa.createDynamicLayer("solidos", tilesets, 0, 0);
-    solidos.setCollisionByProperty({ solido: true });
+    this.mapa = this.make.tilemap({ key: "map" });
+    this.tilesets = this.mapa.addTilesetImage("terrain", "tiles");
+    this.foraje = this.mapa.createDynamicLayer("foraje", this.tilesets, 0, 0);
+    this.solidos = this.mapa.createDynamicLayer("solidos", this.tilesets, 0, 0);
+    this.solidos.setCollisionByProperty({ solido: true });
 
     // CONFIGURACION DE PERSONAJE
     this.jugador = this.physics.add.sprite(40, 400, "personaje1", 0);
@@ -40,8 +40,13 @@ class Bootloader extends Phaser.Scene {
       frameRate: 10,
     });
 
-    this.physics.add.collider(this.jugador, solidos);
-    this.cameras.main.setBounds(0, 0, mapa.widthInPixels, mapa.heightInPixels);
+    this.physics.add.collider(this.jugador, this.solidos);
+    this.cameras.main.setBounds(
+      0,
+      0,
+      this.mapa.widthInPixels,
+      this.mapa.heightInPixels
+    );
     this.cameras.main.startFollow(this.jugador);
   }
 
