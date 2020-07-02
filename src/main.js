@@ -2,13 +2,21 @@ import Booloader from "./Bootloader.js";
 
 const config = {
   title: "Paiton",
-  width: 500,
-  height: 500,
+  width: 1200,
+  height: 600,
+  autoResize: true,
   parent: "container",
-  backgroundColor: "#fff",
+  backgroundColor: "#51D1F6",
   pixelArt: true,
   type: Phaser.AUTO,
   scene: [Booloader],
+  physics: {
+    default: "arcade",
+    arcade: {
+      debug: false,
+      gravity: { y: 1000 },
+    },
+  },
 };
 
 new Phaser.Game(config);
