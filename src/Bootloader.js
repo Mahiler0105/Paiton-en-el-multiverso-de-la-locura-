@@ -119,6 +119,7 @@ class Bootloader extends Phaser.Scene {
       this.jugador.anims.play("agacharse", true);
     } else if (this.abajo.isUp && this.flag) {
       this.jugador.anims.play("poder", true);
+
       setTimeout(() => {
         this.flag = false;
       }, 1500);
