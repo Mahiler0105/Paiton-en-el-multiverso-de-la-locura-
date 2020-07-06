@@ -7,6 +7,8 @@ class Bootloader extends Phaser.Scene {
     this.live = 100;
     this.energy = 100;
     this.coin;
+    this.vida;
+    this.energia;
   }
   preload() {
     this.load.path = "./assets/";
@@ -112,25 +114,25 @@ class Bootloader extends Phaser.Scene {
       this.mapa.heightInPixels
     );
 
-    var vida = this.add.text(50, 40, `Vida: ${this.live}`, {
+    this.vida = this.add.text(50, 40, `Vida: ${this.live}`, {
       fontSize: "20px",
       fill: "#ffffff",
     });
-    vida.setScrollFactor(0);
-    var vida = this.add.text(50, 70, `Energia: ${this.energy}`, {
+    this.vida.setScrollFactor(0);
+    this.energia = this.add.text(50, 70, `Energia: ${this.energy}`, {
       fontSize: "20px",
       fill: "#ffffff",
     });
-    vida.setScrollFactor(0);
+    this.energia.setScrollFactor(0);
     // var scoreText = this.add.text(50, 40, "score:", style);
 
     this.cameras.main.startFollow(this.jugador, true, 50, 50, 50, 200);
   }
 
-  collectCoin() {
+  collectCoin(player, coin) {
     coin.destroy(coin.x, coin.y); // remove the tile/coin
-    coinScore++; // increment the score
-    text.setText(`Coins: ${coinScore}x`); // set the text to show the current score
+    this.live++; // increment the score
+    this.vida.setText(`Coins: ${this.live}`); // set the text to show the current score
     return false;
   }
 
