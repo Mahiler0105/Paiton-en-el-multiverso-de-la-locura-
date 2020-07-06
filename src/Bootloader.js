@@ -18,6 +18,7 @@ class Bootloader extends Phaser.Scene {
       frameHeight: 93,
     });
   }
+
   create() {
     // CONFIGURACION DE MAPA
     this.mapa = this.make.tilemap({ key: "map" });
@@ -25,18 +26,18 @@ class Bootloader extends Phaser.Scene {
     this.foraje = this.mapa.createDynamicLayer("foraje", this.tilesets, 0, 0);
     this.solidos = this.mapa.createDynamicLayer("solidos", this.tilesets, 0, 0);
     this.solidos.setCollisionByProperty({ solido: true });
-
     // CONFIGURACION DE PERSONAJE
     this.jugador = this.physics.add.sprite(40, 400, "personaje1", 0);
     this.jugador.setSize(75, 0);
 
+    //CONFIGURACION KEYPRESS
     this.derecha = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.D);
     this.izquierda = this.input.keyboard.addKey(
       Phaser.Input.Keyboard.KeyCodes.A
     );
     this.arriba = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.W);
     this.abajo = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.S);
-
+    // ANIMACIONES
     this.anims.create({
       key: "caminar",
       frames: this.anims.generateFrameNumbers("personaje1", {
@@ -45,7 +46,6 @@ class Bootloader extends Phaser.Scene {
       }),
       frameRate: 10,
     });
-
     this.anims.create({
       key: "saltar",
       frames: this.anims.generateFrameNumbers("personaje1", {
@@ -54,7 +54,6 @@ class Bootloader extends Phaser.Scene {
       }),
       frameRate: 10,
     });
-
     this.anims.create({
       key: "agacharse",
       frames: this.anims.generateFrameNumbers("personaje2", {
@@ -63,7 +62,6 @@ class Bootloader extends Phaser.Scene {
       }),
       frameRate: 10,
     });
-
     this.anims.create({
       key: "poder",
       frames: this.anims.generateFrameNumbers("personaje2", {
