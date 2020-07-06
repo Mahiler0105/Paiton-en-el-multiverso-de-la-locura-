@@ -140,8 +140,8 @@ class Bootloader extends Phaser.Scene {
             }, 1500);
         } else {
             this.jugador.setFrame(0);
+        
         }
     }
 }
-
 export default Bootloader;
