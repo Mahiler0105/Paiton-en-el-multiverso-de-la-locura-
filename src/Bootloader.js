@@ -4,8 +4,8 @@ class Bootloader extends Phaser.Scene {
     this.velocidad = 350;
     this.alturaSalto = -350;
     this.flag = false;
-    this.live = 100;
-    this.energy = 100;
+    this.live = 20;
+    this.energy = 20;
     this.coin;
     this.vida;
     this.energia;
@@ -14,7 +14,7 @@ class Bootloader extends Phaser.Scene {
     this.load.path = "./assets/";
     this.load.tilemapTiledJSON("map", "pepito.json");
     this.load.image("tiles", "si-bicubic.png");
-    this.load.image("coin", "coins.png");
+    this.load.image("coin", "dolar.png");
     this.load.spritesheet("personaje1", "snake.png", {
       frameWidth: 95,
       frameHeight: 85,
@@ -45,16 +45,20 @@ class Bootloader extends Phaser.Scene {
     this.coin = this.physics.add.staticGroup();
 
     this.coinLayer.forEach((object) => {
-      let obj = this.coin.create(object.x, object.y - 20, "coin");
+      let obj = this.coin.create(object.x, object.y, "coin");
       obj.setScale(object.width / 400, object.height / 400);
-      obj.setOrigin(0);
-      obj.body.width = object.width;
-      obj.body.height = object.height;
+      obj.body.width = 25;
+      obj.body.height = 30;
+      obj.body.position = {
+        x: obj.body.position.x + 115,
+        y: obj.body.position.y + 115,
+      };
     });
 
     // CONFIGURACION DE PERSONAJE
     this.jugador = this.physics.add.sprite(40, 400, "personaje1", 0);
     this.jugador.setSize(75, 0);
+    // this.jugador.setDisplaySize(40, 40);
 
     this.derecha = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.D);
     this.izquierda = this.input.keyboard.addKey(
@@ -131,8 +135,8 @@ class Bootloader extends Phaser.Scene {
 
   collectCoin(player, coin) {
     coin.destroy(coin.x, coin.y); // remove the tile/coin
-    this.live++; // increment the score
-    this.vida.setText(`Coins: ${this.live}`); // set the text to show the current score
+    this.live = this.live + 20; // increment the score
+    this.vida.setText(`Vida: ${this.live}`); // set the text to show the current score
     return false;
   }
 
