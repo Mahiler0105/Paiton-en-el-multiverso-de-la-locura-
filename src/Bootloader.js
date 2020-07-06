@@ -4,11 +4,15 @@ class Bootloader extends Phaser.Scene {
     this.velocidad = 350;
     this.alturaSalto = -350;
     this.flag = false;
+    this.live = 100;
+    this.energy = 100;
+    this.coin;
   }
   preload() {
     this.load.path = "./assets/";
-    this.load.tilemapTiledJSON("map", "primero.json");
-    this.load.image("tiles", "terrain.png");
+    this.load.tilemapTiledJSON("map", "pepito.json");
+    this.load.image("tiles", "si-bicubic.png");
+    this.load.image("coin", "coins.png");
     this.load.spritesheet("personaje1", "snake.png", {
       frameWidth: 95,
       frameHeight: 85,
@@ -18,26 +22,45 @@ class Bootloader extends Phaser.Scene {
       frameHeight: 93,
     });
   }
-
   create() {
+    this.score = 0;
+
+    let stye = { font: "20px Arial", fill: "#fff" };
+
     // CONFIGURACION DE MAPA
     this.mapa = this.make.tilemap({ key: "map" });
-    this.tilesets = this.mapa.addTilesetImage("terrain", "tiles");
-    this.foraje = this.mapa.createDynamicLayer("foraje", this.tilesets, 0, 0);
+    this.tilesets = this.mapa.addTilesetImage("si-bicubic", "tiles");
+    this.foraje = this.mapa.createDynamicLayer(
+      "complementario",
+      this.tilesets,
+      0,
+      0
+    );
     this.solidos = this.mapa.createDynamicLayer("solidos", this.tilesets, 0, 0);
     this.solidos.setCollisionByProperty({ solido: true });
+
+    this.coinLayer = this.mapa.getObjectLayer("CoinLayer")["objects"];
+    this.coin = this.physics.add.staticGroup();
+
+    this.coinLayer.forEach((object) => {
+      let obj = this.coin.create(object.x, object.y - 20, "coin");
+      obj.setScale(object.width / 400, object.height / 400);
+      obj.setOrigin(0);
+      obj.body.width = object.width;
+      obj.body.height = object.height;
+    });
+
     // CONFIGURACION DE PERSONAJE
     this.jugador = this.physics.add.sprite(40, 400, "personaje1", 0);
     this.jugador.setSize(75, 0);
 
-    //CONFIGURACION KEYPRESS
     this.derecha = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.D);
     this.izquierda = this.input.keyboard.addKey(
       Phaser.Input.Keyboard.KeyCodes.A
     );
     this.arriba = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.W);
     this.abajo = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.S);
-    // ANIMACIONES
+
     this.anims.create({
       key: "caminar",
       frames: this.anims.generateFrameNumbers("personaje1", {
@@ -46,6 +69,7 @@ class Bootloader extends Phaser.Scene {
       }),
       frameRate: 10,
     });
+
     this.anims.create({
       key: "saltar",
       frames: this.anims.generateFrameNumbers("personaje1", {
@@ -54,6 +78,7 @@ class Bootloader extends Phaser.Scene {
       }),
       frameRate: 10,
     });
+
     this.anims.create({
       key: "agacharse",
       frames: this.anims.generateFrameNumbers("personaje2", {
@@ -62,6 +87,7 @@ class Bootloader extends Phaser.Scene {
       }),
       frameRate: 10,
     });
+
     this.anims.create({
       key: "poder",
       frames: this.anims.generateFrameNumbers("personaje2", {
@@ -72,13 +98,40 @@ class Bootloader extends Phaser.Scene {
     });
 
     this.physics.add.collider(this.jugador, this.solidos);
+    this.physics.add.overlap(
+      this.jugador,
+      this.coin,
+      this.collectCoin,
+      null,
+      this
+    );
     this.cameras.main.setBounds(
       0,
       0,
       this.mapa.widthInPixels,
       this.mapa.heightInPixels
     );
-    this.cameras.main.startFollow(this.jugador);
+
+    var vida = this.add.text(50, 40, `Vida: ${this.live}`, {
+      fontSize: "20px",
+      fill: "#ffffff",
+    });
+    vida.setScrollFactor(0);
+    var vida = this.add.text(50, 70, `Energia: ${this.energy}`, {
+      fontSize: "20px",
+      fill: "#ffffff",
+    });
+    vida.setScrollFactor(0);
+    // var scoreText = this.add.text(50, 40, "score:", style);
+
+    this.cameras.main.startFollow(this.jugador, true, 50, 50, 50, 200);
+  }
+
+  collectCoin() {
+    coin.destroy(coin.x, coin.y); // remove the tile/coin
+    coinScore++; // increment the score
+    text.setText(`Coins: ${coinScore}x`); // set the text to show the current score
+    return false;
   }
 
   update() {
@@ -117,7 +170,6 @@ class Bootloader extends Phaser.Scene {
       this.jugador.anims.play("agacharse", true);
     } else if (this.abajo.isUp && this.flag) {
       this.jugador.anims.play("poder", true);
-
       setTimeout(() => {
         this.flag = false;
       }, 1500);
