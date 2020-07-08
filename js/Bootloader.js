@@ -11,7 +11,7 @@ class Bootloader extends Phaser.Scene {
         this.energia;
     }
     preload() {
-        this.load.path = "./assets/";
+        this.load.path = "./img/";
         this.load.tilemapTiledJSON("map", "pepito.json");
         this.load.image("tiles", "si-bicubic.png");
         this.load.image("coin", "dolar.png");
