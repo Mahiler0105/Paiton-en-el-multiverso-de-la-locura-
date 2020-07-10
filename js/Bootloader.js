@@ -1,31 +1,52 @@
+
 class Pow extends Phaser.Physics.Arcade.Sprite {
     constructor(scene, x, y) {
-        super(scene, x, y, "power");
+        super(scene, x, y,"fire");
     }
-    fire(x, y) {
+    fire(x, y, z) {
         this.body.reset(x, y);
-
+        z==0 ? this.setFlipX(false) : this.setFlipX(true);
+        this.anims.play("fuego", true);
+        this.body.setGravityY(-1000);
         this.setActive(true);
         this.setVisible(true);
-        this.setVelocityX(1200);
-    }
+        z == 0 ? this.setVelocityX(-500) : this.setVelocityX(500);
+    }    
 }
 
 class Powered extends Phaser.Physics.Arcade.Group {
     constructor(scene) {
         super(scene.physics.world, scene);
+        this.scene = scene
+        this.timer = null;  
+    }
+    init(){
         this.createMultiple({
             classType: Pow,
-            frameQuantity: 1000,
+            frameQuantity: 1,
             active: false,
             visible: false,
-            key: "power",
+            key: "fire",
         });
+        this.scene.handlePower()
+        this.timer = setInterval(() => {
+            this.createMultiple({
+                classType: Pow,
+                frameQuantity: 1,
+                active: false,
+                visible: false,
+                key: "fire",
+            });    
+            this.scene.handlePower()    
+        }, 1500);  
     }
-    fireLaser(x, y) {
+    stop(){
+        clearInterval(this.timer);
+    }
+    fireLaser(x, y, z) {
         const laser = this.getFirstDead(false);
         if (laser) {
-            laser.fire(x, y);
+            laser.fire(x, y, z);
         }
     }
 }
@@ -36,28 +57,28 @@ class Bootloader extends Phaser.Scene {
         this.velocidad = 350;
         this.alturaSalto = -350;
         this.flag = false;
+        this.saltando = false;
         this.live = 20;
-        this.energy = 20;
-        this.coin;
-        this.vida;
-        this.energia;
+        this.energy = 200;
+        this.coin = null;
+        this.vida = null;
+        this.energia = null;
         this.shotTime = 0;
-        this.powerr;
+        this.powerr = null;
+        this.direccion = null;
+        this.attacking = null;
     }
     preload() {
         this.load.path = "../img/";
         this.load.tilemapTiledJSON("map", "pepito.json");
         this.load.image("tiles", "si-bicubic.png");
         this.load.image("coin", "lovelove.png");
-        this.load.image("power", "dolar3.png");
-        this.load.spritesheet("personaje1", "snake.png", {
-            frameWidth: 95,
-            frameHeight: 85,
-        });
-        this.load.spritesheet("personaje2", "snake.png", {
-            frameWidth: 93,
-            frameHeight: 93,
-        });
+        //this.load.image("power", "dolar3.png");
+
+        this.load.atlas("paiton", "paiton.png", "paiton.json")
+
+        this.load.atlas("fire", "fire.png", "fire.json")      
+
     }
     create() {
         this.score = 0;
@@ -81,7 +102,7 @@ class Bootloader extends Phaser.Scene {
         );
         this.solidos.setCollisionByProperty({ solido: true });
 
-        this.coinLayer = this.mapa.getObjectLayer("CoinLayer")["objects"];
+        this.coinLayer = this.mapa.getObjectLayer("CoinLayer").objects;
         this.coin = this.physics.add.staticGroup();
 
         this.coinLayer.forEach((object) => {
@@ -95,10 +116,12 @@ class Bootloader extends Phaser.Scene {
             };
         });
 
-        // CONFIGURACION DE PERSONAJE
-        this.jugador = this.physics.add.sprite(40, 400, "personaje1", 0);
+        this.jugador = this.physics.add.sprite(39, 400, "paiton", "1.moving/0.png");
         this.jugador.setSize(75, 0);
-        // this.jugador.setDisplaySize(40, 40);
+        this.jugador.flipX = true;
+
+
+        this.fire = this.physics.add.sprite(50, 300, "fire", "0.png");
 
         this.derecha = this.input.keyboard.addKey(
             Phaser.Input.Keyboard.KeyCodes.D
@@ -115,43 +138,67 @@ class Bootloader extends Phaser.Scene {
         this.ataca = this.input.keyboard.addKey(
             Phaser.Input.Keyboard.KeyCodes.F
         );
+            
+        this.anims.create({
+            key: "quieto",
+            frames: this.anims.generateFrameNames("paiton", {
+                prefix: "2.move/",                
+                start: 0,
+                end: 0,
+                suffix: ".png",
+            }),
+            frameRate: 10,
+        });
 
         this.anims.create({
             key: "caminar",
-            frames: this.anims.generateFrameNumbers("personaje1", {
-                start: 1,
-                end: 12,
+            frames: this.anims.generateFrameNames("paiton", {
+                prefix: "1.moving/",                
+                start: 0,
+                end: 17,
+                suffix: ".png",
             }),
             frameRate: 10,
         });
-
         this.anims.create({
             key: "saltar",
-            frames: this.anims.generateFrameNumbers("personaje1", {
-                start: 24,
-                end: 24,
+            frames: this.anims.generateFrameNames("paiton", {                              
+                start: 0,
+                end: 0,
+                suffix: ".png",
             }),
             frameRate: 10,
         });
-
         this.anims.create({
             key: "agacharse",
-            frames: this.anims.generateFrameNumbers("personaje2", {
-                start: 63,
-                end: 65,
+            frames: this.anims.generateFrameNames("paiton", {
+                prefix: "3.surprise/",                
+                start: 4,
+                end: 7,
+                suffix: ".png",
             }),
             frameRate: 10,
         });
 
         this.anims.create({
             key: "poder",
-            frames: this.anims.generateFrameNumbers("personaje2", {
-                start: 62,
-                end: 62,
+            frames: [{
+                key: "paiton", frame: '3.surprise/1.png' 
+            }],
+            frameRate: 10,
+        });
+
+        this.anims.create({
+            key: "fuego",
+            frames: this.anims.generateFrameNames("fire", {                
+                start: 0,
+                end: 23,
+                suffix: ".png",
             }),
             frameRate: 10,
         });
 
+        this.fire.anims.play('fuego')
         this.physics.add.collider(this.jugador, this.solidos);
         this.physics.add.overlap(
             this.jugador,
@@ -202,13 +249,19 @@ class Bootloader extends Phaser.Scene {
         this.vida.setText(`Vida: ${this.live}`); // set the text to show the current score
         return false;
     }
+    handlePower (){
+        this.energy -= 8;
+        this.energia.setText(`Energia: ${this.energy}`)
+    }
 
     update() {
         this.jugador.setVelocityX(0);
         if (this.izquierda.isDown) {
+            this.direccion = 0;
             this.jugador.setVelocityX(-this.velocidad);
             this.jugador.flipX = false;
         } else if (this.derecha.isDown) {
+            this.direccion = 1;
             this.jugador.setVelocityX(this.velocidad);
             this.jugador.flipX = true;
         }
@@ -217,23 +270,44 @@ class Bootloader extends Phaser.Scene {
         //   this.jugador.setVelocityY(this.alturaSalto);
         // }
         else if (this.ataca.isDown) {
-            this.powerr.fireLaser(this.jugador.x + 25, this.jugador.y);
+            this.powerr.fireLaser(this.jugador.x + 25, this.jugador.y, this.direccion);
+            if (!this.attacking && this.energy>0){
+                this.powerr.init()
+            }            
+            this.attacking = true;
+            //this.handlePower();
+            console.log('atacando');
+            
+        } else if(this.ataca.isUp && this.attacking){            
+            this.powerr.stop()
+            this.attacking = false;
+            console.log('no atacando');
+            
+
         } else if (this.arriba.isDown && this.jugador.body.onFloor()) {
             this.jugador.setVelocityY(this.alturaSalto);
+            this.saltando = true;
         }
 
-        if (
-            (this.izquierda.isDown || this.derecha.isDown) &&
-            this.jugador.body.onFloor() &&
-            !this.abajo.isDown
-        ) {
+        let izqder = (this.izquierda.isDown || this.derecha.isDown) && this.jugador.body.onFloor() 
+
+        if ( izqder ) {
+            if ( izqder && this.arriba.isDown ) {
+                this.jugador.setVelocityY(this.alturaSalto);
+            }    
             this.flag = false;
             this.jugador.anims.play("caminar", true);
-        } else if (!this.jugador.body.onFloor() && !this.abajo.isDown) {
+            console.log("Caminando");
+        } else if (!this.jugador.body.onFloor() && !this.abajo.isDown && this.saltando) {
             // this.jugador.setFrame(24);
             this.flag = false;
             this.jugador.anims.play("saltar", true);
-            console.log("Saltar");
+            console.log("Saltando");
+        } else if(this.jugador.body.onFloor() && !this.arriba.isDown) {
+            console.log('Sobre el piso');
+            this.jugador.anims.play("quieto", true);
+            this.saltando = false;
+            
         } else if (this.abajo.isDown) {
             console.log("Abajo");
             this.flag = true;
@@ -244,9 +318,7 @@ class Bootloader extends Phaser.Scene {
             setTimeout(() => {
                 this.flag = false;
             }, 1500);
-        } else {
-            this.jugador.setFrame(0);
-        }
+        } 
     }
 }
 
