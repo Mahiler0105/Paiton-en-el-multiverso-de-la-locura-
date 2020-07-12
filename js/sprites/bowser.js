@@ -4,9 +4,11 @@ export default class Bowser {
         this.scene = scene
         this.x = x;
         this.y = y;
-        this.bowser = null;
+        this.bowser = new Phaser.Physics.Arcade.Sprite(this.scene);
         this.direccion = 0;
         this.choque = false; 
+        this.hurt = false;
+        this.atacando = false;
         
         this.life = 4500;
         this.vida = null;
@@ -59,7 +61,7 @@ export default class Bowser {
             frames: this.scene.anims.generateFrameNames("bowser", { prefix: "9.dead/", start: 0, end: 12, suffix: ".png"}), frameRate: 10,
         });
         this.scene.anims.create({
-            key: "fuego",
+            key: "lanzafuego",
             frames: this.scene.anims.generateFrameNames("bowser", { prefix: "10.fire/", start: 0, end: 41, suffix: ".png"}), frameRate: 10,
         });
         this.scene.anims.create({
@@ -93,6 +95,7 @@ export default class Bowser {
         });
         this.vida.setScrollFactor(0);
         this.mostrado = false;
+
         
     }
     update(){        
@@ -110,18 +113,38 @@ export default class Bowser {
                 this.mostrado = true
             }
 
-            if(distance > 80 || distance < -140) {
+            if(distance > 100 || distance < -160) {
                 distance > 0 ? this.direccion = -1 : this.direccion = 1;
-                this.moverse(this.direccion)
+
+                if(!this.hurt) this.moverse(this.direccion)
+                else{
+                    this.herido()
+                    setTimeout(() => {
+                        this.hurt = false
+                    }, 1000);
+                    this.bowser.setVelocityX(0)
+                }
             } else {
-                this.direccion = 0
-                this.estatico()
+                if(!this.atacando){
+                    this.direccion = 0                
+                    this.punch(2)
+                    this.bowser.setVelocityX(0)
+                    this.atacando = true
+                }
+                
+
+                //this.lanzafuego()
+                //Math.round(Math.random() * 3)
             }
         }     
         //console.log(distance)   
     }
-    handleLife (away, danorecibido){
-        if(danorecibido) this.life -= 8;
+    handleLife = (away, danorecibido) => {
+        if(danorecibido) {
+            this.life -= Math.random()*10;
+            this.hurt = true
+            //this.herido()
+        }
         this.vida.setText( away ? '' : `Vida: ${this.life}`)        
     }
     estatico(){
@@ -149,13 +172,13 @@ export default class Bowser {
         }
     }
     lanzafuego(){
-        this.bowser.anims.play("fuego", true);   
+        this.bowser.anims.play("lanzafuego", true);   
     }
     risa(){
         this.bowser.anims.play("risa", true);   
     }
-    herido(){
-        this.bowser.anims.play("herido", true);   
+    herido(){      
+        this.bowser.anims.play("herido", true);
     }
     golpeado(){
         this.bowser.anims.play("golpeado", true);   
@@ -167,6 +190,18 @@ export default class Bowser {
         if (animacion == 0) this.bowser.anims.play("punch", true);
         else if (animacion == 1) this.bowser.anims.play("superpunch", true); 
         else if (animacion == 2) this.bowser.anims.play("megapunch", true);  
+
+        // this.scene.paiton.paiton.body.setVelocityX(-400)
+        // this.scene.paiton.paiton.body.setVelocityY(150)
+        // this.scene.paiton.paiton.setBounce(2)
+
+        //this.scene.paiton.paiton.setVelocityX(-10).setBounce(1, 1).setCollideWorldBounds(true).setGravityY(200);
+        this.scene.paiton.paiton.setVelocityX(-10).setBounce(1,1).setCollideWorldBounds(false)
+
+        this.scene.handleVida();
+        setTimeout(() => {
+            this.atacando = false;
+        }, 1500);
     }    
     fallopunch(){
         this.bowser.anims.play("fallo", true);   

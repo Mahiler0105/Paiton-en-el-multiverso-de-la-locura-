@@ -6,6 +6,7 @@ export default class Paiton extends Phaser.Physics.Arcade.Sprite {
         this.scene = scene;
         this.x = x;
         this.y = y;
+
         this.paiton = new Phaser.Physics.Arcade.Sprite(this.scene);
 
         this.derecha = this.scene.input.keyboard.addKey(
@@ -82,6 +83,17 @@ export default class Paiton extends Phaser.Physics.Arcade.Sprite {
             frames: [{ key: "paiton", frame: "3.surprise/1.png" }],
             frameRate: 10,
         });
+
+        this.scene.anims.create({
+            key: "muerto",
+            frames: this.scene.anims.generateFrameNames("paiton", {
+                prefix: "4.dead/",
+                start: 8,
+                end: 14,
+                suffix: ".png",
+            }),
+            frameRate: 10,
+        });
         this.scene.anims.create({
             key: "fuego",
             frames: this.scene.anims.generateFrameNames("fire", {                
@@ -101,8 +113,8 @@ export default class Paiton extends Phaser.Physics.Arcade.Sprite {
             }),
             frameRate: 10,
         });
+        
         this.powerr = new Powered(this.scene);
-               
     }
     update() {
         this.paiton.setVelocityX(0);
@@ -119,11 +131,13 @@ export default class Paiton extends Phaser.Physics.Arcade.Sprite {
                 this.paiton.x,
                 this.paiton.y,
                 this.direccion
-            );
+            );           
+
             if (!this.attacking && this.scene.energy > 0) {
-                this.powerr.init();
+                this.powerr.init()
             }
             this.attacking = true;
+            //console.log(recibido);
             //console.log("atacando");
         } else if (this.ataca.isUp && this.attacking) {
             this.powerr.stop();

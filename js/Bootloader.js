@@ -5,6 +5,7 @@ export default class Bootloader extends Phaser.Scene {
         super("Bootloader");
         this.paiton = null;
         this.bowser = null;
+        this.ball = null;
         
         this.coin = null;
         this.live = 20;
@@ -20,6 +21,14 @@ export default class Bootloader extends Phaser.Scene {
         this.vida.setText(`Vida: ${this.live}`); // set the text to show the current score
         return false;
     }
+    handleVida (){
+        if (this.live > 0 ){
+            this.live = this.live - 20;
+        }else{
+            this.paiton.anims.play("muerto", true);
+        }
+        this.vida.setText(`Vida: ${this.live}`) 
+      }
 
     handlePower (){
         this.energy -= 8;
@@ -92,20 +101,34 @@ export default class Bootloader extends Phaser.Scene {
         });
         
         this.paiton.create()
-        this.physics.add.collider(this.paiton.paiton, this.solidos);
+        this.physics.add.collider(this.paiton.paiton, this.solidos);        
+
+        this.cameras.main.startFollow(this.paiton.paiton, true, 50, 50, 50, 200);
         this.physics.add.overlap(
             this.paiton.paiton,
             this.coin,
             this.collectCoin,
             null,
             this
-        );         
-        this.cameras.main.startFollow(this.paiton.paiton, true, 50, 50, 50, 200);
+        );
+        
 
         this.bowser.create()
         this.physics.add.collider(this.bowser.bowser, this.solidos);
+        //this.physics.add.collider(this.paiton.paiton, this.bowser.bowser);
 
        
+        
+        
+        // this.physics.add.overlap(
+        //     this.paiton.powerr,
+        //     this.bowser.bowser,
+        //     this.bowser.handleLife(false, true),
+        //     null,
+        //     this
+        // );   
+        //this.powerr = new Powered(this.scene);
+
         // var frame = this.textures.get('bowser').getFrameNames()
         // console.log(frame);
         
@@ -122,13 +145,14 @@ export default class Bootloader extends Phaser.Scene {
         // this.powerr.setVelocityX(-180);
 
         // this.powerr.setAll("anchor.y", 0.5);
-
         
     }  
+
+    nuevo () {
+        console.log("jajajaj")
+    }
     update() {
         this.paiton.update()  
-        this.bowser.update()     
-       
-    }
-    
+        this.bowser.update()
+    }    
 }
