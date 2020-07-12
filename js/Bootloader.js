@@ -4,7 +4,9 @@ class Pow extends Phaser.Physics.Arcade.Sprite {
   }
   fire(x, y) {
     this.body.reset(x, y);
-
+    this.setFlipX();
+    this.body.setGravityY(-1000);
+    this.anims.play("saltar", true);
     this.setActive(true);
     this.setVisible(true);
     this.setVelocityX(1200);
@@ -12,17 +14,19 @@ class Pow extends Phaser.Physics.Arcade.Sprite {
 }
 
 class Powered extends Phaser.Physics.Arcade.Group {
-  constructor(scene) {
+  constructor(scene, power) {
     super(scene.physics.world, scene);
     this.createMultiple({
       classType: Pow,
-      frameQuantity: 1000,
+      frameQuantity: power,
       active: false,
       visible: false,
       key: "power",
     });
   }
+
   fireLaser(x, y) {
+    console.log(this);
     const laser = this.getFirstDead(false);
     if (laser) {
       laser.fire(x, y);
@@ -42,7 +46,7 @@ class Bootloader extends Phaser.Scene {
     this.vida;
     this.energia;
     this.shotTime = 0;
-    this.powerr;
+    this.powerr = 1000;
   }
   preload() {
     this.load.path = "../img/";
@@ -168,7 +172,7 @@ class Bootloader extends Phaser.Scene {
 
     this.cameras.main.startFollow(this.jugador, true, 50, 50, 50, 200);
 
-    this.powerr = new Powered(this);
+    this.powerr = new Powered(this, this.powerr);
     // this.powerr = this.add.group();
     // this.powerr.enableBody = true;
     // this.powerr.createMultiple(5, "power");
@@ -204,7 +208,7 @@ class Bootloader extends Phaser.Scene {
     //   this.jugador.setVelocityY(this.alturaSalto);
     // }
     else if (this.ataca.isDown) {
-      this.powerr.fireLaser(this.jugador.x + 25, this.jugador.y);
+      // this.powerr.fireLaser(this.jugador.x + 25, this.jugador.y);
     } else if (this.arriba.isDown && this.jugador.body.onFloor()) {
       this.jugador.setVelocityY(this.alturaSalto);
     }
@@ -228,6 +232,9 @@ class Bootloader extends Phaser.Scene {
       this.jugador.anims.play("agacharse", true);
     } else if (this.abajo.isUp && this.flag) {
       this.jugador.anims.play("poder", true);
+
+      this.powerr.fireLaser(this.jugador.x + 25, this.jugador.y);
+
       setTimeout(() => {
         this.flag = false;
       }, 1500);
