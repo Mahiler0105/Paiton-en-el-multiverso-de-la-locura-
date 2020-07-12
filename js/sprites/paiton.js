@@ -6,7 +6,7 @@ export default class Paiton extends Phaser.Physics.Arcade.Sprite {
         this.scene = scene;
         this.x = x;
         this.y = y;
-        this.paiton = null;
+        this.paiton = new Phaser.Physics.Arcade.Sprite(this.scene);
 
         this.derecha = this.scene.input.keyboard.addKey(
             Phaser.Input.Keyboard.KeyCodes.D
@@ -86,7 +86,17 @@ export default class Paiton extends Phaser.Physics.Arcade.Sprite {
             key: "fuego",
             frames: this.scene.anims.generateFrameNames("fire", {                
                 start: 0,
-                end: 23,
+                end: 24,
+                suffix: ".png",
+            }),
+            frameRate: 10,
+        });
+
+        this.scene.anims.create({
+            key: "ball",
+            frames: this.scene.anims.generateFrameNames("ball", {                
+                start: 0,
+                end: 15,
                 suffix: ".png",
             }),
             frameRate: 10,
@@ -95,7 +105,6 @@ export default class Paiton extends Phaser.Physics.Arcade.Sprite {
                
     }
     update() {
-
         this.paiton.setVelocityX(0);
         if (this.izquierda.isDown) {
             this.direccion = 0;
@@ -107,7 +116,7 @@ export default class Paiton extends Phaser.Physics.Arcade.Sprite {
             this.paiton.flipX = true;
         } else if (this.ataca.isDown) {
             this.powerr.fireLaser(
-                this.paiton.x + 25,
+                this.paiton.x,
                 this.paiton.y,
                 this.direccion
             );
@@ -115,11 +124,11 @@ export default class Paiton extends Phaser.Physics.Arcade.Sprite {
                 this.powerr.init();
             }
             this.attacking = true;
-            console.log("atacando");
+            //console.log("atacando");
         } else if (this.ataca.isUp && this.attacking) {
             this.powerr.stop();
             this.attacking = false;
-            console.log("no atacando");
+            //console.log("no atacando");
         } else if (this.arriba.isDown && this.paiton.body.onFloor()) {
             this.paiton.setVelocityY(this.alturaSalto);
             this.saltando = true;
@@ -132,10 +141,12 @@ export default class Paiton extends Phaser.Physics.Arcade.Sprite {
         if (izqder) {
             if (izqder && this.arriba.isDown) {
                 this.paiton.setVelocityY(this.alturaSalto);
-            }
-            this.flag = false;
-            this.paiton.anims.play("caminar", true);
-            console.log("Caminando");
+                this.paiton.anims.play("saltar", true);
+            } else {
+                this.flag = false;
+                this.paiton.anims.play("caminar", true);
+            }     
+            //console.log("Caminando");
         } else if (
             !this.paiton.body.onFloor() &&
             !this.abajo.isDown &&
@@ -144,15 +155,14 @@ export default class Paiton extends Phaser.Physics.Arcade.Sprite {
             // this.paiton.setFrame(24);
             this.flag = false;
             this.paiton.anims.play("saltar", true);
-            console.log("Saltando");
+            //console.log("Saltando");
         } else if (this.paiton.body.onFloor() && !this.arriba.isDown) {
-            console.log("Sobre el piso");
+            //console.log("Sobre el piso");
             this.paiton.anims.play("quieto", true);
             this.saltando = false;
         } else if (this.abajo.isDown) {
-            console.log("Abajo");
-            this.flag = true;
-            // this.paiton.anims.play("saltar", false);
+            //console.log("Abajo");
+            this.flag = true;            
             this.paiton.anims.play("agacharse", true);
         } else if (this.abajo.isUp && this.flag) {
             this.paiton.anims.play("poder", true);

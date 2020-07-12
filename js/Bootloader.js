@@ -32,13 +32,13 @@ export default class Bootloader extends Phaser.Scene {
         this.load.image("tiles", "si-bicubic.png");
         this.load.image("coin", "lovelove.png");
         
-        this.load.atlas("fire", "fire.png", "fire.json")     
-        //this.load.atlas("bowser", "bowser.png", "bowser.json")
-
+        this.load.atlas("fire", "fire.png", "fire.json");
+        this.load.atlas("ball", "ball.png", "ball.json");    
+        
         this.paiton = new Paiton(this, 39, 400)
         this.paiton.preload()
-
-        this.bowser = new Bowser(this, 1000, 100)
+        
+        this.bowser = new Bowser(this, 1800, 100)
         this.bowser.preload()
     }
     
@@ -105,7 +105,9 @@ export default class Bootloader extends Phaser.Scene {
         this.bowser.create()
         this.physics.add.collider(this.bowser.bowser, this.solidos);
 
-
+       
+        // var frame = this.textures.get('bowser').getFrameNames()
+        // console.log(frame);
         
         
         // this.powerr = this.add.group();
@@ -120,9 +122,13 @@ export default class Bootloader extends Phaser.Scene {
         // this.powerr.setVelocityX(-180);
 
         // this.powerr.setAll("anchor.y", 0.5);
+
+        
     }  
     update() {
-       this.paiton.update()  
-       this.bowser.update()     
+        this.paiton.update()  
+        this.bowser.update()     
+       
     }
+    
 }

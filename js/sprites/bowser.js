@@ -1,75 +1,49 @@
-export default class bowser extends Phaser.Physics.Arcade.Sprite{
-    constructor(scene, x, y) {
-        super(scene, x, y,"bowser");
-        this.scene = scene;
+import Paiton from './paiton.js';
+export default class Bowser {    
+    constructor(scene, x, y) {             
+        this.scene = scene
         this.x = x;
         this.y = y;
         this.bowser = null;
-    }
-    estatico(){
-        this.anims.play("idle", true)
-    }
-    victoria(){
-
-    }
-    golpe(){
-
-    }
-    debil(){
-
-    }
-    rankear(){
-
-    }
-    caminar(){
-
-    }
-    punch(){
-
-    }
-    fallopunch(){
-
-    }
-    muerto(){
-
-    }
-    lanzafuego(){
-
-    }
-    risa(){
-
-    }
-    preload(){
+        this.direccion = 0;
+        this.choque = false; 
+        
+        this.life = 4500;
+        this.vida = null;
+    }    
+    preload(){        
         this.scene.load.path = "../../img/";
         this.scene.load.atlas("bowser", "bowser.png", "bowser.json")
     }
     create(){
         this.bowser = this.scene.physics.add.sprite(this.x, this.y, "bowser", "1.idle/0.png");
+        this.bowser.setSize(50,53)
         this.bowser.setDisplaySize(150, 150)
-        this.bowser.flipX = true     
+        this.bowser.flipX = true           
+        
         
         this.scene.anims.create({
             key: "idle",
-            frames: this.scene.anims.generateFrameNames("bowser", { prefix: "1.idle/", start: 0, end: 6, suffix: ".png"}), frameRate: 10,
+            frames: this.scene.anims.generateFrameNames("bowser", { prefix: "1.idle/", start: 0, end: 13, suffix: ".png"}), frameRate: 10,
         });
         this.scene.anims.create({
-            key: "victory",
-            frames: this.scene.anims.generateFrameNames("bowser", { prefix: "2.victory_I/", start: 0, end: 34, suffix: ".png"}), frameRate: 10,
+            key: "victoria1",
+            frames: this.scene.anims.generateFrameNames("bowser", { prefix: "2.victory_I/", start: 0, end: 32, suffix: ".png"}), frameRate: 10,
         });
         this.scene.anims.create({
-            key: "golpe",
+            key: "punch",
             frames: this.scene.anims.generateFrameNames("bowser", { prefix: "3.simplepunch/", start: 0, end: 23, suffix: ".png"}), frameRate: 10,
         });
         this.scene.anims.create({
-            key: "weaken",
+            key: "debil",
             frames: this.scene.anims.generateFrameNames("bowser", { prefix: "4.weaken/", start: 0, end: 15, suffix: ".png"}), frameRate: 10,
         });
         this.scene.anims.create({
-            key: "levelup",
-            frames: this.scene.anims.generateFrameNames("bowser", { prefix: "5.victory_II/", start: 0, end: 10, suffix: ".png"}), frameRate: 10,
+            key: "victoria2",
+            frames: this.scene.anims.generateFrameNames("bowser", { prefix: "5.victory_II/", start: 0, end: 9, suffix: ".png"}), frameRate: 10,
         });
         this.scene.anims.create({
-            key: "caminata",
+            key: "moverse",
             frames: this.scene.anims.generateFrameNames("bowser", { prefix: "6.caminatas/", start: 0, end: 15, suffix: ".png"}), frameRate: 10,
         });
         this.scene.anims.create({
@@ -77,40 +51,133 @@ export default class bowser extends Phaser.Physics.Arcade.Sprite{
             frames: this.scene.anims.generateFrameNames("bowser", { prefix: "7.punch/", start: 0, end: 27, suffix: ".png"}), frameRate: 10,
         });
         this.scene.anims.create({
-            key: "punchfail",
+            key: "fallo",
             frames: this.scene.anims.generateFrameNames("bowser", { prefix: "8.punchfail/", start: 0, end: 14, suffix: ".png"}), frameRate: 10,
         });
         this.scene.anims.create({
-            key: "dead",
-            frames: this.scene.anims.generateFrameNames("bowser", { prefix: "9.dead/", start: 0, end: 35, suffix: ".png"}), frameRate: 10,
+            key: "muerto",
+            frames: this.scene.anims.generateFrameNames("bowser", { prefix: "9.dead/", start: 0, end: 12, suffix: ".png"}), frameRate: 10,
         });
         this.scene.anims.create({
-            key: "fire",
-            frames: this.scene.anims.generateFrameNames("bowser", { prefix: "10.fire/", start: 0, end: 6, suffix: ".png"}), frameRate: 10,
+            key: "fuego",
+            frames: this.scene.anims.generateFrameNames("bowser", { prefix: "10.fire/", start: 0, end: 41, suffix: ".png"}), frameRate: 10,
         });
         this.scene.anims.create({
-            key: "laugth",
+            key: "risa",
             frames: this.scene.anims.generateFrameNames("bowser", { prefix: "11.laught/", start: 0, end: 28, suffix: ".png"}), frameRate: 10,
         });
         this.scene.anims.create({
-            key: "laugth",
-            frames: this.scene.anims.generateFrameNames("bowser", { prefix: "12.megapunch/", start: 0, end: 28, suffix: ".png"}), frameRate: 10,
+            key: "megapunch",
+            frames: this.scene.anims.generateFrameNames("bowser", { prefix: "12.megapunch/", start: 0, end: 14, suffix: ".png"}), frameRate: 10,
         });
         this.scene.anims.create({
-            key: "laugth",
-            frames: this.scene.anims.generateFrameNames("bowser", { prefix: "13.defenseshell/", start: 0, end: 28, suffix: ".png"}), frameRate: 10,
+            key: "defensa",
+            frames: this.scene.anims.generateFrameNames("bowser", { prefix: "13.defenseshell/", start: 0, end: 4, suffix: ".png"}), frameRate: 10,
         });
         this.scene.anims.create({
-            key: "laugth",
-            frames: this.scene.anims.generateFrameNames("bowser", { prefix: "14.stunned/", start: 0, end: 28, suffix: ".png"}), frameRate: 10,
+            key: "golpeado",
+            frames: this.scene.anims.generateFrameNames("bowser", { prefix: "14.stunned/", start: 0, end: 2, suffix: ".png"}), frameRate: 10,
         });
         this.scene.anims.create({
-            key: "laugth",
-            frames: this.scene.anims.generateFrameNames("bowser", { prefix: "15.victory_III/", start: 0, end: 28, suffix: ".png"}), frameRate: 10,
+            key: "victoria3",
+            frames: this.scene.anims.generateFrameNames("bowser", { prefix: "15.victory_III/", start: 0, end: 6, suffix: ".png"}), frameRate: 10,
         });
+        this.scene.anims.create({
+            key: "herido",
+            frames: [{key: 'bowser', frame: 'hurt.png'}], frameRate: 10,
+        });
+
+        this.vida = this.scene.add.text(1040, 40, '', {
+            fontSize: "20px",
+            fill: "#ffffff",
+        });
+        this.vida.setScrollFactor(0);
+        this.mostrado = false;
+        
     }
-    update(){       
-        this.anims.play("idle", true)
-        //this.estatico()
+    update(){        
+        var distance = this.bowser.body.x - this.scene.paiton.paiton.body.x
+        
+        if (distance > 800 || distance < -800){  
+            this.estatico()          
+            this.direccion = 0
+            this.mostrado = false
+            this.handleLife(true, false)            
+        } 
+        else {    
+            if (!this.mostrado){
+                this.handleLife(false, false)
+                this.mostrado = true
+            }
+
+            if(distance > 80 || distance < -140) {
+                distance > 0 ? this.direccion = -1 : this.direccion = 1;
+                this.moverse(this.direccion)
+            } else {
+                this.direccion = 0
+                this.estatico()
+            }
+        }     
+        //console.log(distance)   
     }
+    handleLife (away, danorecibido){
+        if(danorecibido) this.life -= 8;
+        this.vida.setText( away ? '' : `Vida: ${this.life}`)        
+    }
+    estatico(){
+        this.bowser.anims.play("idle", true);  
+        this.bowser.setVelocityX(0);      
+    }
+    
+    debil(){
+        this.bowser.anims.play("debil", true);   
+    }    
+    moverse(direccion) {        
+        if( !this.bowser.body.onWall() ) {
+            if (!this.choque){
+                this.bowser.anims.play("moverse", true);
+                if (direccion == -1) this.bowser.flipX = true
+                else if (direccion == 1) this.bowser.flipX = false;
+                this.bowser.setVelocityX(direccion * 50);
+            } else {
+                this.estatico()
+                if (this.direccion != this.anterior) this.choque = false
+            }
+        } else {
+            this.choque = true
+            this.anterior = this.direccion     
+        }
+    }
+    lanzafuego(){
+        this.bowser.anims.play("fuego", true);   
+    }
+    risa(){
+        this.bowser.anims.play("risa", true);   
+    }
+    herido(){
+        this.bowser.anims.play("herido", true);   
+    }
+    golpeado(){
+        this.bowser.anims.play("golpeado", true);   
+    }
+    defensa(){
+        this.bowser.anims.play("defensa", true);   
+    }
+    punch(animacion){
+        if (animacion == 0) this.bowser.anims.play("punch", true);
+        else if (animacion == 1) this.bowser.anims.play("superpunch", true); 
+        else if (animacion == 2) this.bowser.anims.play("megapunch", true);  
+    }    
+    fallopunch(){
+        this.bowser.anims.play("fallo", true);   
+    }
+    victoria(animacion){
+        if (animacion == 0) this.bowser.anims.play("victoria1", true); 
+        else if (animacion == 1) this.bowser.anims.play("victoria2", true);
+        else if (animacion ==2) this.bowser.anims.play("victoria3", true); 
+    }
+    muerto(){
+        this.bowser.anims.play("muerto", true);   
+    }
+    
 }

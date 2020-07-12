@@ -1,11 +1,24 @@
-class Pow extends Phaser.Physics.Arcade.Sprite {
+class Fireflame extends Phaser.Physics.Arcade.Sprite {
     constructor(scene, x, y) {
         super(scene, x, y,"fire");
     }
     fire(x, y, z) {
-        this.body.reset(x, y);
+        this.body.reset( z==0?x-25:x+25, y);
         z==0 ? this.setFlipX(false) : this.setFlipX(true);
         this.anims.play("fuego", true);
+        this.body.setGravityY(-1000);
+        this.setActive(true);
+        this.setVisible(true);        
+    }    
+}
+class Fireball extends Phaser.Physics.Arcade.Sprite {
+    constructor(scene, x, y) {
+        super(scene, x, y,"fire");
+    }
+    fire(x, y, z) {
+        this.body.reset( z==0?x-25:x+25, y);
+        z==0 ? this.setFlipX(false) : this.setFlipX(true);
+        this.anims.play("ball", true);
         this.body.setGravityY(-1000);
         this.setActive(true);
         this.setVisible(true);
@@ -19,25 +32,24 @@ export default class Powered extends Phaser.Physics.Arcade.Group {
         this.scene = scene
         this.timer = null;  
     }
-    init(){
+    fill(){
         this.createMultiple({
-            classType: Pow,
+            classType: Fireball,
             frameQuantity: 1,
             active: false,
             visible: false,
             key: "fire",
         });
+    }
+    init(){
+        this.fill()
         this.scene.handlePower()
         this.timer = setInterval(() => {
-            this.createMultiple({
-                classType: Pow,
-                frameQuantity: 1,
-                active: false,
-                visible: false,
-                key: "fire",
-            });    
-            this.scene.handlePower()    
-        }, 1500);  
+            if (this.scene.energy > 0){
+                this.fill()
+                this.scene.handlePower()    
+            }            
+        }, 400);  
     }
     stop(){
         clearInterval(this.timer);
