@@ -5,36 +5,11 @@ export default class Bootloader extends Phaser.Scene {
         super("Bootloader");
         this.paiton = null;
         this.bowser = null;
-        this.ball = null;
+        this.ball = null;        
         
         this.coin = null;
-        this.live = 20;
-        this.vida = null;
-        this.energy = 200;
-        this.energia = null
         this.shotTime = 0;        
     }    
-
-    collectCoin(player, coin) {
-        coin.destroy(coin.x, coin.y); // remove the tile/coin
-        this.live = this.live + 20; // increment the score
-        this.vida.setText(`Vida: ${this.live}`); // set the text to show the current score
-        return false;
-    }
-    handleVida (){
-        if (this.live > 0 ){
-            this.live = this.live - 20;
-        }else{
-            this.paiton.anims.play("muerto", true);
-        }
-        this.vida.setText(`Vida: ${this.live}`) 
-      }
-
-    handlePower (){
-        this.energy -= 8;
-        this.energia.setText(`Energia: ${this.energy}`)
-    }
-
     preload() {
         this.load.path = "../img/";
         this.load.tilemapTiledJSON("map", "pepito.json");
@@ -74,19 +49,8 @@ export default class Bootloader extends Phaser.Scene {
             0
         );
         this.solidos.setCollisionByProperty({ solido: true });
-
-        this.vida = this.add.text(50, 40, `Vida: ${this.live}`, {
-            fontSize: "20px",
-            fill: "#ffffff",
-        });
-        this.vida.setScrollFactor(0);
-        this.energia = this.add.text(50, 70, `Energia: ${this.energy}`, {
-            fontSize: "20px",
-            fill: "#ffffff",
-        });
-        this.energia.setScrollFactor(0); 
-
         this.coinLayer = this.mapa.getObjectLayer("CoinLayer").objects;
+
         this.coin = this.physics.add.staticGroup();
 
         this.coinLayer.forEach((object) => {
@@ -104,13 +68,13 @@ export default class Bootloader extends Phaser.Scene {
         this.physics.add.collider(this.paiton.paiton, this.solidos);        
 
         this.cameras.main.startFollow(this.paiton.paiton, true, 50, 50, 50, 200);
-        this.physics.add.overlap(
-            this.paiton.paiton,
-            this.coin,
-            this.collectCoin,
-            null,
-            this
-        );
+        // this.physics.add.overlap(
+        //     this.paiton.paiton,
+        //     this.coin,
+        //     this.paiton.collectCoin,
+        //     null,
+        //     this
+        // );
         
 
         this.bowser.create()

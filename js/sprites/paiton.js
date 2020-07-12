@@ -32,6 +32,12 @@ export default class Paiton extends Phaser.Physics.Arcade.Sprite {
         this.attacking = null;
         this.saltando = false;
         this.flag = false;  
+
+        
+        this.live = 20;
+        this.vida = null;
+        this.energy = 200;
+        this.energia = null
     }    
 
     preload() {
@@ -42,6 +48,25 @@ export default class Paiton extends Phaser.Physics.Arcade.Sprite {
         this.paiton = this.scene.physics.add.sprite(this.x, this.y, "paiton", "1.moving/0.png");
         this.paiton.setSize(75, 0);
         this.paiton.flipX = true;
+
+        this.vida = this.scene.add.text(50, 40, `Vida: ${this.live}`, {
+            fontSize: "20px",
+            fill: "#ffffff",
+        });
+        this.vida.setScrollFactor(0);
+        this.energia = this.scene.add.text(50, 70, `Energia: ${this.energy}`, {
+            fontSize: "20px",
+            fill: "#ffffff",
+        });
+        this.energia.setScrollFactor(0); 
+
+        // this.scene.physics.add.overlap(
+        //     this.paiton,
+        //     this.scene.coin,
+        //     this.collectCoin,
+        //     null,
+        //     this
+        // );
 
         this.scene.anims.create({
             key: "quieto",
@@ -85,7 +110,7 @@ export default class Paiton extends Phaser.Physics.Arcade.Sprite {
         });
 
         this.scene.anims.create({
-            key: "muerto",
+            key: "killeado",
             frames: this.scene.anims.generateFrameNames("paiton", {
                 prefix: "4.dead/",
                 start: 8,
@@ -184,5 +209,24 @@ export default class Paiton extends Phaser.Physics.Arcade.Sprite {
                 this.flag = false;
             }, 1500);
         }
+    }
+    collectCoin(coin) {
+        coin.destroy(coin.x, coin.y); // remove the tile/coin
+        this.live = this.live + 20; // increment the score
+        this.vida.setText(`Vida: ${this.live}`); // set the text to show the current score
+        return false;
+    }
+    handleVida (){
+        if (this.live > 0 ){
+            this.live = this.live - 20;
+        }else{
+            this.paiton.anims.play("killeado", true);
+        }
+        this.vida.setText(`Vida: ${this.live}`) 
+    }
+
+    handlePower (){
+        this.energy -= 8;
+        this.energia.setText(`Energia: ${this.energy}`)
     }
 }

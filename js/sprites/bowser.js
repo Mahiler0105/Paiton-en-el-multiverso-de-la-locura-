@@ -198,7 +198,7 @@ export default class Bowser {
         //this.scene.paiton.paiton.setVelocityX(-10).setBounce(1, 1).setCollideWorldBounds(true).setGravityY(200);
         this.scene.paiton.paiton.setVelocityX(-10).setBounce(1,1).setCollideWorldBounds(false)
 
-        this.scene.handleVida();
+        this.scene.paiton.handleVida();
         setTimeout(() => {
             this.atacando = false;
         }, 1500);
