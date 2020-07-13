@@ -50,7 +50,7 @@ export default class Bowser {
         });
         this.scene.anims.create({
             key: "superpunch",
-            frames: this.scene.anims.generateFrameNames("bowser", { prefix: "7.punch/", start: 0, end: 27, suffix: ".png"}), frameRate: 10,
+            frames: this.scene.anims.generateFrameNames("bowser", { prefix: "7.punch/", start: 0, end: 27, suffix: ".png"}), frameRate: 15,
         });
         this.scene.anims.create({
             key: "fallo",
@@ -70,7 +70,7 @@ export default class Bowser {
         });
         this.scene.anims.create({
             key: "megapunch",
-            frames: this.scene.anims.generateFrameNames("bowser", { prefix: "12.megapunch/", start: 0, end: 14, suffix: ".png"}), frameRate: 10,
+            frames: this.scene.anims.generateFrameNames("bowser", { prefix: "12.megapunch/", start: 0, end: 14, suffix: ".png"}), frameRate: 15,
         });
         this.scene.anims.create({
             key: "defensa",
@@ -95,10 +95,12 @@ export default class Bowser {
         });
         this.vida.setScrollFactor(0);
         this.mostrado = false;
-
-        
+        this.ataquelegido = false;
     }
-    update(){        
+    update(){    
+        
+        //console.log(this.scene.paiton.paiton.body.velocity.x);
+
         var distance = this.bowser.body.x - this.scene.paiton.paiton.body.x
         
         if (distance > 800 || distance < -800){  
@@ -117,7 +119,7 @@ export default class Bowser {
                 distance > 0 ? this.direccion = -1 : this.direccion = 1;
 
                 if(!this.hurt) this.moverse(this.direccion)
-                else{
+                else {
                     this.herido()
                     setTimeout(() => {
                         this.hurt = false
@@ -125,9 +127,13 @@ export default class Bowser {
                     this.bowser.setVelocityX(0)
                 }
             } else {
+                let ataque
+                if(!this.ataquelegido) { ataque = Math.round(Math.random()*2); this.ataquelegido = true }
                 if(!this.atacando){
-                    this.direccion = 0                
-                    this.punch(2)
+                    //console.log(ataque)
+                    this.punch(ataque, distance)
+
+                    // this.direccion = 0    
                     this.bowser.setVelocityX(0)
                     this.atacando = true
                 }
@@ -141,9 +147,8 @@ export default class Bowser {
     }
     handleLife = (away, danorecibido) => {
         if(danorecibido) {
-            this.life -= Math.random()*10;
+            this.life -= Math.round(Math.random()*10);
             this.hurt = true
-            //this.herido()
         }
         this.vida.setText( away ? '' : `Vida: ${this.life}`)        
     }
@@ -186,22 +191,22 @@ export default class Bowser {
     defensa(){
         this.bowser.anims.play("defensa", true);   
     }
-    punch(animacion){
+    punch(animacion, distancia){
         if (animacion == 0) this.bowser.anims.play("punch", true);
         else if (animacion == 1) this.bowser.anims.play("superpunch", true); 
-        else if (animacion == 2) this.bowser.anims.play("megapunch", true);  
+        else if (animacion == 2) this.bowser.anims.play("megapunch", true); 
+     
+        
 
-        // this.scene.paiton.paiton.body.setVelocityX(-400)
-        // this.scene.paiton.paiton.body.setVelocityY(150)
-        // this.scene.paiton.paiton.setBounce(2)
-
-        //this.scene.paiton.paiton.setVelocityX(-10).setBounce(1, 1).setCollideWorldBounds(true).setGravityY(200);
-        this.scene.paiton.paiton.setVelocityX(-10).setBounce(1,1).setCollideWorldBounds(false)
-
-        this.scene.paiton.handleVida();
+        if (distancia < 80 && distancia > -140) {
+            this.scene.paiton.versus = true;
+            this.scene.paiton.handleVida();
+        }
+        
         setTimeout(() => {
             this.atacando = false;
-        }, 1500);
+            this.ataquelegido = false;
+        }, 2500);
     }    
     fallopunch(){
         this.bowser.anims.play("fallo", true);   
