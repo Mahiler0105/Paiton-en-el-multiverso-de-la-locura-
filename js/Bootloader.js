@@ -1,75 +1,55 @@
-class Pow extends Phaser.Physics.Arcade.Sprite {
-  constructor(scene, x, y) {
-    super(scene, x, y, "power");
-  }
-  fire(x, y) {
-    this.body.reset(x, y);
-    this.setFlipX();
-    this.body.setGravityY(-1000);
-    this.anims.play("saltar", true);
-    this.setActive(true);
-    this.setVisible(true);
-    this.setVelocityX(1200);
-  }
-}
-
-class Powered extends Phaser.Physics.Arcade.Group {
-  constructor(scene, power) {
-    super(scene.physics.world, scene);
-    this.createMultiple({
-      classType: Pow,
-      frameQuantity: power,
-      active: false,
-      visible: false,
-      key: "power",
-    });
-  }
-
-  fireLaser(x, y) {
-    console.log(this);
-    const laser = this.getFirstDead(false);
-    if (laser) {
-      laser.fire(x, y);
-    }
-  }
-}
-
-class Bootloader extends Phaser.Scene {
+import Paiton from "../js/sprites/paiton.js";
+import Bowser from "../js/sprites/bowser.js";
+export default class Bootloader extends Phaser.Scene {
   constructor() {
     super("Bootloader");
-    this.velocidad = 350;
-    this.alturaSalto = -350;
-    this.flag = false;
+    this.paiton = null;
+    this.bowser = null;
+
+    this.coin = null;
     this.live = 20;
-    this.energy = 20;
-    this.coin;
-    this.vida;
-    this.energia;
+    this.vida = null;
+    this.energy = 200;
+    this.energia = null;
     this.shotTime = 0;
-    this.powerr = 1000;
   }
+
+  collectCoin(player, coin) {
+    coin.destroy(coin.x, coin.y); // remove the tile/coin
+    this.live = this.live + 20; // increment the score
+    this.vida.setText(`Vida: ${this.live}`); // set the text to show the current score
+    return false;
+  }
+
+  handlePower() {
+    this.energy -= 8;
+    this.energia.setText(`Energia: ${this.energy}`);
+  }
+
   preload() {
     this.load.path = "../img/";
     this.load.tilemapTiledJSON("map", "pepito.json");
     this.load.image("tiles", "si-bicubic.png");
     this.load.image("coin", "lovelove.png");
-    this.load.image("power", "dolar3.png");
-    this.load.spritesheet("personaje1", "snake.png", {
-      frameWidth: 95,
-      frameHeight: 85,
-    });
-    this.load.spritesheet("personaje2", "snake.png", {
-      frameWidth: 93,
-      frameHeight: 93,
-    });
+
+    this.load.atlas("fire", "fire.png", "fire.json");
+    this.load.atlas("ball", "ball.png", "ball.json");
+
+    this.paiton = new Paiton(this, 39, 400);
+    this.paiton.preload();
+
+    this.bowser = new Bowser(this, 1800, 100);
+    this.bowser.preload();
   }
+
   create() {
-    this.score = 0;
-
-    let stye = { font: "20px Arial", fill: "#fff" };
-
-    // CONFIGURACION DE MAPA
     this.mapa = this.make.tilemap({ key: "map" });
+    this.cameras.main.setBounds(
+      0,
+      0,
+      this.mapa.widthInPixels,
+      this.mapa.heightInPixels
+    );
     this.tilesets = this.mapa.addTilesetImage("si-bicubic", "tiles");
     this.foraje = this.mapa.createDynamicLayer(
       "complementario",
@@ -80,7 +60,18 @@ class Bootloader extends Phaser.Scene {
     this.solidos = this.mapa.createDynamicLayer("solidos", this.tilesets, 0, 0);
     this.solidos.setCollisionByProperty({ solido: true });
 
-    this.coinLayer = this.mapa.getObjectLayer("CoinLayer")["objects"];
+    this.vida = this.add.text(50, 40, `Vida: ${this.live}`, {
+      fontSize: "20px",
+      fill: "#ffffff",
+    });
+    this.vida.setScrollFactor(0);
+    this.energia = this.add.text(50, 70, `Energia: ${this.energy}`, {
+      fontSize: "20px",
+      fill: "#ffffff",
+    });
+    this.energia.setScrollFactor(0);
+
+    this.coinLayer = this.mapa.getObjectLayer("CoinLayer").objects;
     this.coin = this.physics.add.staticGroup();
 
     this.coinLayer.forEach((object) => {
@@ -94,85 +85,23 @@ class Bootloader extends Phaser.Scene {
       };
     });
 
-    // CONFIGURACION DE PERSONAJE
-    this.jugador = this.physics.add.sprite(40, 400, "personaje1", 0);
-    this.jugador.setSize(75, 0);
-    // this.jugador.setDisplaySize(40, 40);
-
-    this.derecha = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.D);
-    this.izquierda = this.input.keyboard.addKey(
-      Phaser.Input.Keyboard.KeyCodes.A
-    );
-    this.arriba = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.W);
-    this.abajo = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.S);
-    this.ataca = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.F);
-
-    this.anims.create({
-      key: "caminar",
-      frames: this.anims.generateFrameNumbers("personaje1", {
-        start: 1,
-        end: 12,
-      }),
-      frameRate: 10,
-    });
-
-    this.anims.create({
-      key: "saltar",
-      frames: this.anims.generateFrameNumbers("personaje1", {
-        start: 24,
-        end: 24,
-      }),
-      frameRate: 10,
-    });
-
-    this.anims.create({
-      key: "agacharse",
-      frames: this.anims.generateFrameNumbers("personaje2", {
-        start: 63,
-        end: 65,
-      }),
-      frameRate: 10,
-    });
-
-    this.anims.create({
-      key: "poder",
-      frames: this.anims.generateFrameNumbers("personaje2", {
-        start: 62,
-        end: 62,
-      }),
-      frameRate: 10,
-    });
-
-    this.physics.add.collider(this.jugador, this.solidos);
+    this.paiton.create();
+    this.physics.add.collider(this.paiton.paiton, this.solidos);
     this.physics.add.overlap(
-      this.jugador,
+      this.paiton.paiton,
       this.coin,
       this.collectCoin,
       null,
       this
     );
-    this.cameras.main.setBounds(
-      0,
-      0,
-      this.mapa.widthInPixels,
-      this.mapa.heightInPixels
-    );
+    this.cameras.main.startFollow(this.paiton.paiton, true, 50, 50, 50, 200);
 
-    this.vida = this.add.text(50, 40, `Vida: ${this.live}`, {
-      fontSize: "20px",
-      fill: "#ffffff",
-    });
-    this.vida.setScrollFactor(0);
-    this.energia = this.add.text(50, 70, `Energia: ${this.energy}`, {
-      fontSize: "20px",
-      fill: "#ffffff",
-    });
-    this.energia.setScrollFactor(0);
-    // var scoreText = this.add.text(50, 40, "score:", style);
+    this.bowser.create();
+    this.physics.add.collider(this.bowser.bowser, this.solidos);
 
-    this.cameras.main.startFollow(this.jugador, true, 50, 50, 50, 200);
+    // var frame = this.textures.get('bowser').getFrameNames()
+    // console.log(frame);
 
-    this.powerr = new Powered(this, this.powerr);
     // this.powerr = this.add.group();
     // this.powerr.enableBody = true;
     // this.powerr.createMultiple(5, "power");
@@ -186,62 +115,8 @@ class Bootloader extends Phaser.Scene {
 
     // this.powerr.setAll("anchor.y", 0.5);
   }
-
-  collectCoin(player, coin) {
-    coin.destroy(coin.x, coin.y); // remove the tile/coin
-    this.live = this.live + 20; // increment the score
-    this.vida.setText(`Vida: ${this.live}`); // set the text to show the current score
-    return false;
-  }
-
   update() {
-    this.jugador.setVelocityX(0);
-    if (this.izquierda.isDown) {
-      this.jugador.setVelocityX(-this.velocidad);
-      this.jugador.flipX = false;
-    } else if (this.derecha.isDown) {
-      this.jugador.setVelocityX(this.velocidad);
-      this.jugador.flipX = true;
-    }
-    // MECANICA VUELO
-    // else if (this.arriba.isDown) {
-    //   this.jugador.setVelocityY(this.alturaSalto);
-    // }
-    else if (this.ataca.isDown) {
-      // this.powerr.fireLaser(this.jugador.x + 25, this.jugador.y);
-    } else if (this.arriba.isDown && this.jugador.body.onFloor()) {
-      this.jugador.setVelocityY(this.alturaSalto);
-    }
-
-    if (
-      (this.izquierda.isDown || this.derecha.isDown) &&
-      this.jugador.body.onFloor() &&
-      !this.abajo.isDown
-    ) {
-      this.flag = false;
-      this.jugador.anims.play("caminar", true);
-    } else if (!this.jugador.body.onFloor() && !this.abajo.isDown) {
-      // this.jugador.setFrame(24);
-      this.flag = false;
-      this.jugador.anims.play("saltar", true);
-      console.log("Saltar");
-    } else if (this.abajo.isDown) {
-      console.log("Abajo");
-      this.flag = true;
-      // this.jugador.anims.play("saltar", false);
-      this.jugador.anims.play("agacharse", true);
-    } else if (this.abajo.isUp && this.flag) {
-      this.jugador.anims.play("poder", true);
-
-      this.powerr.fireLaser(this.jugador.x + 25, this.jugador.y);
-
-      setTimeout(() => {
-        this.flag = false;
-      }, 1500);
-    } else {
-      this.jugador.setFrame(0);
-    }
+    this.paiton.update();
+    this.bowser.update();
   }
 }
-
-export default Bootloader;
