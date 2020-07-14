@@ -47,8 +47,8 @@ class Fireball extends Phaser.Physics.Arcade.Sprite {
                 lifespan: { min: 100, max: 200 },
                 angle: { min: 135, max: 225 },
                 speed: { min: 300, max: 500 },
-                scale: { start: 0.6, end: 0 },
-                gravityY: 1000,
+                scale: { start: 0.2, end: 0 },
+                gravityY: 3000,
 
                 // frequency: 110,
                 // maxParticles: 10,
