@@ -2,26 +2,36 @@
 <html lang="en">
   <head>
     <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta
+      name="viewport"
+      content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no"
+    />
+
+    <!-- CSS only -->
+    <link
+      rel="stylesheet"
+      href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.0/css/bootstrap.min.css"
+    />
+
+    <!-- JS, Popper.js, and jQuery -->
+    <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.0/dist/umd/popper.min.js"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.0/js/bootstrap.min.js"></script>
+
     <title>Paiton Game</title>
-    <style>
-      * {
-        margin: 0px;
-        padding: 0px;
-      }
-      body {
-        display: flex;
-        justify-content: center;
-        background-color: #2c3e50;
-      }
-      #container {
-        margin-top: 100px;
-      }
-    </style>
   </head>
   <body>
-    <div id="container"></div>
+    <div
+      id="container"
+      class="container-fluid"
+      style="padding-left: 0; padding-right: 0; background-color: black;"
+    >
+      <script src="./js/main.js" type="module"></script>
+    </div>
+
+    <!-- <script>
+      document.querySelectorAll("div")[1].style.opacity = 0;
+    </script> -->
     <script src="./node_modules/phaser/dist/phaser.js"></script>
-    <script src="./js/main.js" type="module"></script>
   </body>
 </html>

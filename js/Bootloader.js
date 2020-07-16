@@ -145,7 +145,7 @@ export default class Bootloader extends Phaser.Scene {
       .setInteractive()
       .setScale(0.6, 0.6)
       .setVisible(false)
-      .on("pointerdown", () => console.log("menu"))
+      .on("pointerdown", () => this.gomenu())
       .on("pointerover", () => (this.menu.alpha = 0.8))
       .on("pointerout", () => (this.menu.alpha = 1))
       .setScrollFactor(0);
@@ -201,6 +201,10 @@ export default class Bootloader extends Phaser.Scene {
     this.menu.setScale(0.5, 0.5);
     setTimeout(() => {
       this.menu.setScale(0.6, 0.6);
+      this.cameras.main.fade(500, 0, 0, 0);
+
+      this.scene.switch("Main");
+      this.scene.get("Main").scene.restart();
     }, 100);
   }
 
