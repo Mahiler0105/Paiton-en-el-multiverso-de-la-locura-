@@ -18,27 +18,53 @@ class Fireball extends Phaser.Physics.Arcade.Sprite {
   }
 
   fire(x, y, z) {
+    this.particles = this.scene.add.particles("flares");
+
     this.scene.physics.add.collider(
       this.scene.bowser.bowser,
       this,
       this.destruir
     );
-    this.body.reset(z == 0 ? x - 25 : x + 25, y);
-    z == 0 ? this.setFlipX(false) : this.setFlipX(true);
-    this.body.width = 20;
-    this.body.height = 20;
+    this.body.reset(z == -1 ? x - 25 : x + 25, y);
+    z == -1 ? this.setFlipX(false) : this.setFlipX(true);
+    this.body.width = 30;
+    this.body.height = 30;
     this.anims.play("ball", true);
-    //this.body.bounce = 0.8;
     this.body.setGravityY(-1000);
     this.setActive(true);
     this.setVisible(true);
-    z == 0 ? this.setVelocityX(-500) : this.setVelocityX(500);
+    z == -1 ? this.setVelocityX(-500) : this.setVelocityX(500);
+    this.scene.ball = this;
   }
   destruir = () => {
     this.scene.bowser.handleLife(false, true);
     this.destroy(true);
     console.log("jose jose");
   };
+  update() {
+    if (this.body != undefined) {
+      this.emmitter = this.particles.createEmitter({
+        frame: ["white", "green"],
+        alpha: { start: 1, end: 0 },
+        lifespan: { min: 100, max: 200 },
+        angle: { min: 135, max: 225 },
+        speed: { min: 300, max: 500 },
+        scale: { start: 0.6, end: 0 },
+        gravityY: 1000,
+
+        // frequency: 110,
+        // maxParticles: 10,
+        bounce: 0.9,
+        //bounds: { x: 250, y: 0, w: 350, h: 0 },
+        collideTop: false,
+        collideBottom: false,
+        blendMode: "ADD",
+      });
+      this.emmitter.startFollow(this);
+    } else {
+      this.particles.destroy(true);
+    }
+  }
 }
 
 export default class Powered extends Phaser.Physics.Arcade.Group {
@@ -58,11 +84,11 @@ export default class Powered extends Phaser.Physics.Arcade.Group {
   }
   init() {
     this.fill();
-    this.scene.handlePower();
+    this.scene.paiton.handlePower();
     this.timer = setInterval(() => {
       if (this.scene.energy > 0) {
         this.fill();
-        this.scene.handlePower();
+        this.scene.paiton.handlePower();
       }
     }, 400);
   }

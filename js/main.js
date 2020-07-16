@@ -1,4 +1,6 @@
 import Booloader from "./Bootloader.js";
+import Loading from "./Loading.js";
+import Start from "./Start.js";
 
 const config = {
   title: "Paiton",
@@ -6,16 +8,21 @@ const config = {
   height: 600,
   autoResize: true,
   parent: "container",
-  backgroundColor: "#51D1F6",
+  //backgroundColor: "#51D1F6",
   pixelArt: true,
   type: Phaser.AUTO,
-  scene: [Booloader],
+  scene: [Start, Booloader, Loading],
   physics: {
     default: "arcade",
     arcade: {
-      debug: true,
+      // debug: true,
       gravity: { y: 690 },
     },
   },
 };
 new Phaser.Game(config);
+
+var canva = document.querySelector("#container").firstChild;
+canva.id = "nuevo";
+
+localStorage.setItem("vidas", 3);
