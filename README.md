@@ -10,3 +10,6 @@ Integrantes del proyecto
 - Catacora‌ ‌Llerena‌ ‌Gabriel‌ ‌ ‌
 - Chullo‌ ‌Mamani‌ ‌Mahiler‌ ‌
 - Valdivia‌ ‌Navarrete‌ ‌Benjamin
+
+### MENU PRINCIPAL
+![paiton](https://user-images.githubusercontent.com/33855347/87728453-b71f8f80-c788-11ea-8bc8-e9eb8bbfe386.PNG)
