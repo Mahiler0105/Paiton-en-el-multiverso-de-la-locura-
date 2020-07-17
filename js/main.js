@@ -30,8 +30,9 @@ const config = {
 };
 
 var game = new Phaser.Game(config);
-// var canva = document.querySelector("#container").firstChild;
-// canva.id = "nuevo";
+var canva = document.querySelector("#container").lastChild;
+console.log(canva);
+canva.id = "nuevo";
 
 if (game.renderType === 1) {
   game.renderer.resize(width, height);
