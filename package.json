@@ -9,12 +9,13 @@
   "license": "ISC",
   "dependencies": {
     "gh-pages": "^3.1.0",
-    "phaser": "^3.23.0"
+    "phaser": "^3.23.0",
+    "phaser3-rex-plugins": "^1.1.20"
   },
   "scripts": {
     "deploy": "gh-pages -d dist"
   },
   "devDependencies": {
-    "cypress": "^4.9.0"
+    "cypress": "^4.10.0"
   }
 }
