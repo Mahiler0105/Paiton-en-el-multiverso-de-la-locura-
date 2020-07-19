@@ -10,7 +10,7 @@ export default class Bowser {
     this.hurt = false;
     this.atacando = false;
 
-    this.life = 4500;
+    this.life = 10;
     this.vida = null;
   }
   preload() {

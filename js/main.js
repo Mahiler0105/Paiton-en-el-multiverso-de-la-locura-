@@ -5,7 +5,6 @@ import Start from "./Start.js";
 // document.querySelectorAll("div")[1].style.opacity = 0;
 const config = {
   title: "Paiton",
-
   width: 1200,
   height: 600,
   autoResize: true,
@@ -24,7 +23,7 @@ const config = {
     default: "arcade",
     arcade: {
       debug: false,
-      gravity: { y: 690 },
+      gravity: { y: 500 },
     },
   },
 };
