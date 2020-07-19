@@ -2,8 +2,8 @@ import Booloader from "./Bootloader.js";
 import Loading from "./Loading.js";
 import Start from "./Start.js";
 
-let web = document.querySelectorAll("div")[1]
-if (web != undefined) web.remove()
+let web = document.querySelectorAll("div")[1];
+if (web != undefined) web.remove();
 
 const config = {
   title: "Paiton",
