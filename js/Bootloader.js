@@ -10,7 +10,7 @@ export default class Bootloader extends Phaser.Scene {
         this.gamePaused = false;
 
         this.intentos = localStorage.getItem("vidas");
-        this.movil = false
+        this.movil = false;
     }
     preload() {
         this.load.path = "../img/";
@@ -24,11 +24,7 @@ export default class Bootloader extends Phaser.Scene {
         this.load.atlas("ball", "ball.png", "ball.json");
 
         this.load.atlas("controls", "controls.png", "controls.json");
-        this.load.atlas(
-            "controls-design",
-            "controls-design.png",
-            "controls-design.json"
-        );
+        this.load.atlas("controls-design", "controls-design.png", "controls-design.json");
         this.load.atlas("flares", "flares.png", "flares.json");
 
         this.paiton = new Paiton(this, 39, 400);
@@ -42,25 +38,10 @@ export default class Bootloader extends Phaser.Scene {
         this.cameras.main.backgroundColor.setFromRGB(81, 209, 246);
         this.cameras.main.fadeIn(500, 0, 0, 0);
         this.mapa = this.make.tilemap({ key: "map" });
-        this.cameras.main.setBounds(
-            0,
-            0,
-            this.mapa.widthInPixels,
-            this.mapa.heightInPixels
-        );
+        this.cameras.main.setBounds(0, 0, this.mapa.widthInPixels, this.mapa.heightInPixels);
         this.tilesets = this.mapa.addTilesetImage("si-bicubic", "tiles");
-        this.foraje = this.mapa.createDynamicLayer(
-            "complementario",
-            this.tilesets,
-            0,
-            0
-        );
-        this.solidos = this.mapa.createDynamicLayer(
-            "solidos",
-            this.tilesets,
-            0,
-            0
-        );
+        this.foraje = this.mapa.createDynamicLayer("complementario", this.tilesets, 0, 0);
+        this.solidos = this.mapa.createDynamicLayer("solidos", this.tilesets, 0, 0);
         this.solidos.setCollisionByProperty({ solido: true });
         this.coinLayer = this.mapa.getObjectLayer("CoinLayer").objects;
 
@@ -79,29 +60,12 @@ export default class Bootloader extends Phaser.Scene {
 
         this.paiton.create();
         this.physics.add.collider(this.paiton.paiton, this.solidos);
-        this.physics.add.overlap(
-            this.paiton.paiton,
-            this.coin,
-            this.paiton.collectCoin,
-            null,
-            this
-        );
-        this.cameras.main.startFollow(
-            this.paiton.paiton,
-            true,
-            50,
-            50,
-            50,
-            200
-        );
+        this.physics.add.overlap(this.paiton.paiton, this.coin, this.paiton.collectCoin, null, this);
+        this.cameras.main.startFollow(this.paiton.paiton, true, 50, 50, 50, 200);
 
         this.bowser.create();
         this.physics.add.collider(this.bowser.bowser, this.solidos);
-        this.physics.add.collider(
-            this.paiton.paiton,
-            this.bowser.bowser,
-            this.paiton.reaccionar
-        );
+        this.physics.add.collider(this.paiton.paiton, this.bowser.bowser, this.paiton.reaccionar);
         this.pause = this.add
             .image(600, 70, "controls-design", "64.png")
             .setInteractive()
@@ -111,17 +75,15 @@ export default class Bootloader extends Phaser.Scene {
             .on("pointerout", () => (this.pause.alpha = 1))
             .setScrollFactor(0);
 
-        this.configuring = false
+        this.configuring = false;
         this.menupause = new Phaser.GameObjects.Group();
-        this.resume = this.add
-            .image(600, 300, "pause")
-            .setScale(0.6, 0.6)
-            .setScrollFactor(0);
+        this.resume = this.add.image(600, 300, "pause").setScale(0.6, 0.6).setScrollFactor(0);
         this.exit = this.add
             .image(840, 140, "controls-design", "65.png")
             .setInteractive()
-            .setScale(0.4, 0.4).setDepth(40000)
-            .on("pointerdown", () => this.resumeall(this.configuring? 2 : 1))
+            .setScale(0.4, 0.4)
+            .setDepth(40000)
+            .on("pointerdown", () => this.resumeall(this.configuring ? 2 : 1))
             .on("pointerover", () => (this.exit.alpha = 0.8))
             .on("pointerout", () => (this.exit.alpha = 1))
             .setScrollFactor(0);
@@ -157,29 +119,68 @@ export default class Bootloader extends Phaser.Scene {
             .on("pointerover", () => (this.settings.alpha = 0.8))
             .on("pointerout", () => (this.settings.alpha = 1))
             .setScrollFactor(0);
-        this.menupause
-            .add(this.resume)
-            .add(this.play)
-            .add(this.replay)
-            .add(this.menu)
-            .add(this.settings)
+        this.menupause.add(this.resume).add(this.play).add(this.replay).add(this.menu).add(this.settings).add(this.exit).setVisible(false);
+
+        this.menusettings = new Phaser.GameObjects.Group();
+        this.configure = this.add.image(600, 300, "configure").setScale(0.6, 0.6).setScrollFactor(0);
+        this.passmovil = this.add
+            .image(700, 280, "controls-design", this.movil ? "59.png" : "53.png")
+            .setInteractive()
+            .setScale(0.8, 0.8)
+            .setScrollFactor(0)
+            .on("pointerdown", () => this.switchmovil())
+            .on("pointerover", () => (this.passmovil.alpha = 0.8))
+            .on("pointerout", () => (this.passmovil.alpha = 1));
+
+        this.initialkeys = ['A', 'W', 'D', 'S', 'F']
+        this.change = [];
+        for (let i = 0; i < 5; i++) {
+            this.change.push(
+                this.add
+                    .image(735, 355 + i * 29.4, "controls", "button-horizontal-0.png")
+                    .setInteractive()
+                    .setScale(0.8, 0.8)
+                    .setScrollFactor(0)
+                    .on("pointerdown", () => this.change[0+i*2].setTintFill(255, 255, 255, 255))
+                    .on("pointerover", () => (this.change[0+i*2].alpha = 0.8))
+                    .on("pointerout", () => (this.change[0+i*2].alpha = 1))
+            );
+            this.change.push(
+                this.add.text(728, 345+i*29.4, this.initialkeys[i], {
+                    fontFamily: 'Comic Sans MS',
+                    fontSize: "15px",
+                    fill: "#fce7b2",
+                }).setScrollFactor(0)
+            )
+        }
+        
+        // this.button = this.add.image(735,355, "controls", "button-horizontal-0.png")
+        //     .setInteractive().setScale(0.8, 0.8).setScrollFactor(0)
+        //     .on("pointerdown", () => (this.button.setTintFill(255,255,255,255)))
+        //     .on("pointerover", () => (this.button.alpha = 0.8))
+        //     .on("pointerout", () => (this.button.alpha = 1))
+
+        
+        this.change.forEach((e)=>{
+            this.menusettings.add(e)
+        })
+        this.menusettings
+            .add(this.configure)
+            .add(this.passmovil)
             .add(this.exit)
             .setVisible(false);
 
-        this.menusettings = new Phaser.GameObjects.Group();
-        this.configure = this.add
-            .image(600, 300, "configure")
-            .setScale(0.6, 0.6)
-            .setScrollFactor(0);
-        this.passmovil = this.add
-            .image(700, 280, "controls-design", "59.png")
-            .setInteractive()
-            .setScale(0.6, 0.6)
-            .on("pointerdown", () => console.log(""))
-            .on("pointerover", () => (this.passmovil.alpha = 0.8))
-            .on("pointerout", () => (this.passmovil.alpha = 1))
-            .setScrollFactor(0);
-        this.menusettings.add(this.configure).add(this.passmovil).add(this.exit).setVisible(false);
+        this.input.keyboard.on("keydown", (e) => {
+            console.dir(e.key);
+
+            this.keys = this.input.keyboard.addKeys("P,H,A,S,E");
+
+            this.izquierda = this.keys[Object.keys(this.keys)[0]];
+            this.arriba = this.keys[Object.keys(this.keys)[1]];
+            this.derecha = this.keys[Object.keys(this.keys)[2]];
+            this.abajo = this.keys[Object.keys(this.keys)[3]];
+            this.ataque = this.keys[Object.keys(this.keys)[4]];
+        });
     }
 
     pauseall() {
@@ -192,27 +193,25 @@ export default class Bootloader extends Phaser.Scene {
         this.menupause.setVisible(true);
     }
     resumeall(button) {
-        button == 0
-            ? this.play.setScale(0.5, 0.5)
-            : this.exit.setScale(0.3, 0.3);
+        button == 0 ? this.play.setScale(0.5, 0.5) : this.exit.setScale(0.3, 0.3);
         setTimeout(() => {
-            switch(button){
-              case 0:
-                this.play.setScale(0.6, 0.6)
-                this.gamePaused = false;
-                this.menupause.setVisible(false);
-                break;
-              case 1:
-                this.exit.setScale(0.4, 0.4);
-                this.gamePaused = false;
-                this.menupause.setVisible(false);
-                break;
-              case 2:
-                this.configuring = false
-                this.exit.setScale(0.4, 0.4);
-                this.gamePaused = false;
-                this.menupause.setVisible(false);
-                this.menusettings.setVisible(false);
+            switch (button) {
+                case 0:
+                    this.play.setScale(0.6, 0.6);
+                    this.gamePaused = false;
+                    this.menupause.setVisible(false);
+                    break;
+                case 1:
+                    this.exit.setScale(0.4, 0.4);
+                    this.gamePaused = false;
+                    this.menupause.setVisible(false);
+                    break;
+                case 2:
+                    this.configuring = false;
+                    this.exit.setScale(0.4, 0.4);
+                    this.gamePaused = false;
+                    this.menupause.setVisible(false);
+                    this.menusettings.setVisible(false);
             }
         }, 100);
     }
@@ -245,13 +244,27 @@ export default class Bootloader extends Phaser.Scene {
         }, 100);
     }
     opensettings() {
-        this.configuring = true
+        this.configuring = true;
         this.settings.setScale(0.5, 0.5);
         setTimeout(() => {
             this.settings.setScale(0.6, 0.6);
             this.menusettings.setVisible(true);
         }, 100);
     }
+    switchmovil = () => {
+        this.passmovil.setScale(0.7, 0.7);
+        setTimeout(() => {
+            this.passmovil.setScale(0.8, 0.8);
+        }, 30);
+        if (!this.movil) {
+            this.movil = true;
+            this.passmovil.setFrame("59.png");
+        } else {
+            this.movil = false;
+            this.passmovil.setFrame("53.png");
+        }
+        console.log(this.movil);
+    };
     update() {
         if (!this.gamePaused) {
             this.paiton.update();

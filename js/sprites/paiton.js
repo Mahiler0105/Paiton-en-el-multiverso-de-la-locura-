@@ -45,6 +45,8 @@ export default class Paiton extends Phaser.Physics.Arcade.Sprite {
   preload() {
     this.scene.load.path = "../../img/";
     this.scene.load.atlas("paiton", "paiton.png", "paiton.json");
+    this.scene.load.image("life", "lifebottle.png");
+    this.scene.load.image("power", "powerbottle.png");
   }
   create() {
     this.paiton = this.scene.physics.add.sprite(
@@ -96,7 +98,6 @@ export default class Paiton extends Phaser.Physics.Arcade.Sprite {
       frames: [{ key: "paiton", frame: "3.surprise/1.png" }],
       frameRate: 10,
     });
-
     this.scene.anims.create({
       key: "killeado",
       frames: this.scene.anims.generateFrameNames("paiton", {
@@ -106,7 +107,7 @@ export default class Paiton extends Phaser.Physics.Arcade.Sprite {
         suffix: ".png",
       }),
       frameRate: 10,
-      repeat: -1,
+      repeat: 0,
     });
     this.scene.anims.create({
       key: "fuego",
@@ -117,7 +118,6 @@ export default class Paiton extends Phaser.Physics.Arcade.Sprite {
       }),
       frameRate: 10,
     });
-
     this.scene.anims.create({
       key: "ball",
       frames: this.scene.anims.generateFrameNames("ball", {
@@ -128,17 +128,28 @@ export default class Paiton extends Phaser.Physics.Arcade.Sprite {
       frameRate: 10,
     });
 
-    this.vida = this.scene.add.text(50, 40, `Vida: ${this.live}`, {
+    this.vida = this.scene.add.text(70, 50, `Vida: ${this.live}`, {
+      fontFamily: 'Comic Sans MS',
       fontSize: "20px",
-      fill: "#ffffff",
+      fill: "#de5757",
     });
     this.vida.setScrollFactor(0);
-    this.energia = this.scene.add.text(50, 70, `Energia: ${this.energy}`, {
+    this.energia = this.scene.add.text(70, 90, `Energia: ${this.energy}`, {
+      fontFamily: 'Comic Sans MS',
       fontSize: "20px",
-      fill: "#ffffff",
+      fill: "#fce7b2",
     });
     this.energia.setScrollFactor(0);
     this.power = new Powered(this.scene);
+
+    this.scene.add.image(50,40, 'life').setScale(0.05, 0.05).setScrollFactor(0).setDepth(400);
+    this.scene.add.image(50,80, 'power').setScale(0.05, 0.05).setScrollFactor(0).setDepth(400);
+
+    this.lifebar = this.scene.add.graphics({ fillStyle: { color: 0xf00000 } }).setScrollFactor(0);
+    this.lifebar.fillRoundedRect(60, 40, 350, 10, 5) 
+
+    this.powerbar = this.scene.add.graphics({ fillStyle: { color: 0xffeb00 } }).setScrollFactor(0); 
+    this.powerbar.fillRoundedRect(60, 80, 250, 10, 5)
   }
 
   sobrepiso() {
@@ -201,6 +212,9 @@ export default class Paiton extends Phaser.Physics.Arcade.Sprite {
   morir() {
     this.paiton.anims.play("killeado", true);
     this.paiton.setVelocityX(0);
+    this.paiton.once('killeado', ()=>{
+      console.log('animationcomplete')
+    })
     localStorage.setItem("vidas", this.scene.intentos - 1);
   }
   update() {
@@ -250,7 +264,6 @@ export default class Paiton extends Phaser.Physics.Arcade.Sprite {
       this.morir();
     }
   }
-
   collectCoin = (player, coin) => {
     coin.destroy(coin.x, coin.y); // remove the tile/coin
     this.live = this.live + 20; // increment the score

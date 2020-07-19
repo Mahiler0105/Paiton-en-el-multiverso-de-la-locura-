@@ -47,5 +47,4 @@ if (game.renderType === 1) {
 }
 
 let actualLife = localStorage.getItem("vidas");
-console.log(actualLife);
-localStorage.setItem("vidas", 3);
+if(actualLife==undefined) localStorage.setItem("vidas", 3);
