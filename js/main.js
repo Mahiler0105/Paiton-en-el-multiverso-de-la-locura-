@@ -2,7 +2,9 @@ import Booloader from "./Bootloader.js";
 import Loading from "./Loading.js";
 import Start from "./Start.js";
 
-// document.querySelectorAll("div")[1].style.opacity = 0;
+let web = document.querySelectorAll("div")[1]
+if (web != undefined) web.remove()
+
 const config = {
   title: "Paiton",
   width: 1200,
@@ -26,11 +28,17 @@ const config = {
       gravity: { y: 500 },
     },
   },
+  // plugins: {
+  //   global: [{
+  //       key: 'rexVirtualJoystick',
+  //       plugin: VirtualJoystickPlugin,
+  //       start: true
+  //   }]
+  // }
 };
 
 var game = new Phaser.Game(config);
 var canva = document.querySelector("#container").lastChild;
-console.log(canva);
 canva.id = "nuevo";
 
 if (game.renderType === 1) {
@@ -38,4 +46,6 @@ if (game.renderType === 1) {
   Phaser.Canvas.setSmoothingEnabled(game.context, false);
 }
 
+let actualLife = localStorage.getItem("vidas");
+console.log(actualLife);
 localStorage.setItem("vidas", 3);
