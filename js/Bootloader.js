@@ -174,19 +174,20 @@ export default class Bootloader extends Phaser.Scene {
     for (let i = 0; i < 5; i++) {
       this.change.push(
         this.add
-          .image(735, 355 + i * 29.4, "controls", "button-horizontal-0.png")
+          .image(750, 355 + i * 29.4, "controls", "button-horizontal-0.png")
           .setInteractive()
-          .setScale(0.8, 0.8)
+          //   .setX(2.5)
+          //   .setY(0.8)
+          .setScale(2.5, 0.8)
           .setScrollFactor(0)
-          .on("pointerdown", () =>
-            this.change[0 + i * 2].setTintFill(255, 255, 255, 255)
-          )
+          .on("pointerdown", () => this.changeKey(0 + i * 2))
           .on("pointerover", () => (this.change[0 + i * 2].alpha = 0.8))
           .on("pointerout", () => (this.change[0 + i * 2].alpha = 1))
       );
+      console.log(this.initialkeys[i].length);
       this.change.push(
         this.add
-          .text(728, 345 + i * 29.4, this.initialkeys[i], {
+          .text(700, 345 + i * 29.4, this.initialkeys[i], {
             fontFamily: "Comic Sans MS",
             fontSize: "15px",
             fill: "#fce7b2",
@@ -194,12 +195,6 @@ export default class Bootloader extends Phaser.Scene {
           .setScrollFactor(0)
       );
     }
-
-    // this.button = this.add.image(735,355, "controls", "button-horizontal-0.png")
-    //     .setInteractive().setScale(0.8, 0.8).setScrollFactor(0)
-    //     .on("pointerdown", () => (this.button.setTintFill(255,255,255,255)))
-    //     .on("pointerover", () => (this.button.alpha = 0.8))
-    //     .on("pointerout", () => (this.button.alpha = 1))
 
     this.change.forEach((e) => {
       this.menusettings.add(e);
@@ -210,17 +205,18 @@ export default class Bootloader extends Phaser.Scene {
       .add(this.exit)
       .setVisible(false);
 
-    this.input.keyboard.on("keydown", (e) => {
-      console.dir(e.key);
+    // this.input.keyboard.on("keydown", (e) => {
+    //     console.dir(e.key);
+    //     this.keys = this.input.keyboard.addKeys("P,H,A,S,E");
 
-      this.keys = this.input.keyboard.addKeys("P,H,A,S,E");
+    //     this.izquierda = this.keys[Object.keys(this.keys)[0]];
+    //     this.arriba = this.keys[Object.keys(this.keys)[1]];
+    //     this.derecha = this.keys[Object.keys(this.keys)[2]];
+    //     this.abajo = this.keys[Object.keys(this.keys)[3]];
+    //     this.ataque = this.keys[Object.keys(this.keys)[4]];
+    // });
 
-      this.izquierda = this.keys[Object.keys(this.keys)[0]];
-      this.arriba = this.keys[Object.keys(this.keys)[1]];
-      this.derecha = this.keys[Object.keys(this.keys)[2]];
-      this.abajo = this.keys[Object.keys(this.keys)[3]];
-      this.ataque = this.keys[Object.keys(this.keys)[4]];
-    });
+    this.anterior = -1;
   }
 
   pauseall() {
@@ -305,6 +301,30 @@ export default class Bootloader extends Phaser.Scene {
     }
     console.log(this.movil);
   };
+
+  changeKey(index) {
+    let initialkeys = [65, 87, 68, 83, 70];
+    if (this.anterior != -1) this.change[this.anterior].setTintFill(0, 0, 0, 0);
+    this.change[index].setTintFill(255, 255, 255, 255);
+    this.anterior = index;
+    let key = "";
+    var keycode = null;
+    const enter = new Promise((resolve, reject) => {
+      this.input.keyboard.on("keydown", (e) => {
+        key = e.key.toUpperCase();
+        keycode = e.keyCode;
+        resolve();
+      });
+    });
+    enter.then(() => {
+      let keyss = localStorage.getItem("keys");
+      let nuevo = keyss.split(",");
+      nuevo[index / 2] = keycode.toString();
+      localStorage.setItem("keys", nuevo);
+      this.change[index + 1].setText(key);
+    });
+  }
+
   update() {
     if (!this.gamePaused) {
       this.paiton.update();

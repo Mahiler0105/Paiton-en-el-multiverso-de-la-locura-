@@ -25,7 +25,7 @@ const config = {
     default: "arcade",
     arcade: {
       debug: false,
-      gravity: { y: 500 },
+      gravity: { y: 690 },
     },
   },
   // plugins: {
@@ -47,5 +47,7 @@ if (game.renderType === 1) {
 }
 
 let actualLife = localStorage.getItem("vidas");
-console.log(actualLife);
-localStorage.setItem("vidas", 3);
+if (actualLife == undefined) localStorage.setItem("vidas", 3);
+
+let initialkeys = [65, 87, 68, 83, 70];
+let keys = localStorage.setItem("keys", initialkeys);
