@@ -255,15 +255,16 @@ export default class Bootloader extends Phaser.Scene {
     this.anterior = -1;
   }
 
-  deathPaiton = () => {
-    console.log((this.paiton.lifebar.visible = false));
-    this.paiton.lifebar.visible = false;
-    this.paiton.powerbar.visible = false;
-    this.paiton.vida.visible = false;
-    this.paiton.energia.visible = false;
-    this.paiton.lifebol.visible = false;
-    this.paiton.powerbol.visible = false;
-    this.paiton.destroy();
+  deathPaiton = (kind = true) => {
+    if (kind) {
+      this.paiton.lifebar.visible = false;
+      this.paiton.powerbar.visible = false;
+      this.paiton.vida.visible = false;
+      this.paiton.energia.visible = false;
+      this.paiton.lifebol.visible = false;
+      this.paiton.powerbol.visible = false;
+    }
+    // this.paiton.destroy();
     this.pause.setVisible(false);
     this.gamePaused = true;
     this.input.stopPropagation();

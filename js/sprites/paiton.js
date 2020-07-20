@@ -237,6 +237,7 @@ export default class Paiton extends Phaser.Physics.Arcade.Sprite {
       console.log("animationcomplete");
     });
     localStorage.setItem("vidas", this.scene.intentos - 1);
+    this.scene.deathPaiton(false);
   }
   update() {
     let arrayKey = localStorage.getItem("keys");
