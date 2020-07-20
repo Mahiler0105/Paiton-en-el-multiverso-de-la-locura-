@@ -137,12 +137,12 @@ export default class Paiton extends Phaser.Physics.Arcade.Sprite {
     this.energia.setScrollFactor(0);
     this.power = new Powered(this.scene);
 
-    this.scene.add
+    this.lifebol = this.scene.add
       .image(50, 40, "life")
       .setScale(0.05, 0.05)
       .setScrollFactor(0)
       .setDepth(400);
-    this.scene.add
+    this.powerbol = this.scene.add
       .image(50, 80, "power")
       .setScale(0.05, 0.05)
       .setScrollFactor(0)
@@ -152,6 +152,7 @@ export default class Paiton extends Phaser.Physics.Arcade.Sprite {
       .graphics({ fillStyle: { color: 0xf00000 } })
       .setScrollFactor(0)
       .fillRoundedRect(60, 40, 350, 10, 5);
+
     this.powerbar = this.scene.add
       .graphics({ fillStyle: { color: 0xffeb00 } })
       .setScrollFactor(0)

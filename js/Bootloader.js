@@ -57,6 +57,7 @@ export default class Bootloader extends Phaser.Scene {
     );
     this.solidos = this.mapa.createDynamicLayer("solidos", this.tilesets, 0, 0);
     this.solidos.setCollisionByProperty({ solido: true });
+
     this.coinLayer = this.mapa.getObjectLayer("CoinLayer").objects;
 
     this.coin = this.physics.add.staticGroup();
@@ -73,8 +74,18 @@ export default class Bootloader extends Phaser.Scene {
     });
 
     this.paiton.create();
+    this.mar = this.mapa.createDynamicLayer("mar", this.tilesets, 0, 0);
+    this.mar.setCollisionByProperty({ mar: true });
+
+    this.physics.add.collider(
+      this.paiton.paiton,
+      this.mar,
+      this.deathPaiton,
+      null,
+      this
+    );
     this.physics.add.collider(this.paiton.paiton, this.solidos);
-    this.physics.add.overlap(
+    this.physics.add.collider(
       this.paiton.paiton,
       this.coin,
       this.paiton.collectCoin,
@@ -100,6 +111,9 @@ export default class Bootloader extends Phaser.Scene {
       .setScrollFactor(0);
 
     this.configuring = false;
+
+    this.menuDeath = new Phaser.GameObjects.Group();
+
     this.menupause = new Phaser.GameObjects.Group();
     this.resume = this.add
       .image(600, 300, "pause")
@@ -146,6 +160,23 @@ export default class Bootloader extends Phaser.Scene {
       .on("pointerover", () => (this.settings.alpha = 0.8))
       .on("pointerout", () => (this.settings.alpha = 1))
       .setScrollFactor(0);
+
+    this.replayDeath = this.add
+      .image(539, 390, "controls-design", "61.png")
+      .setInteractive()
+      .setScale(0.6, 0.6)
+      .on("pointerdown", () => this.replayall())
+      .on("pointerover", () => (this.replay.alpha = 0.8))
+      .on("pointerout", () => (this.replay.alpha = 1))
+      .setScrollFactor(0);
+    this.menuDeat = this.add
+      .image(672, 390, "controls-design", "63.png")
+      .setInteractive()
+      .setScale(0.6, 0.6)
+      .on("pointerdown", () => this.gomenu())
+      .on("pointerover", () => (this.menu.alpha = 0.8))
+      .on("pointerout", () => (this.menu.alpha = 1))
+      .setScrollFactor(0);
     this.menupause
       .add(this.resume)
       .add(this.play)
@@ -153,6 +184,11 @@ export default class Bootloader extends Phaser.Scene {
       .add(this.menu)
       .add(this.settings)
       .add(this.exit)
+      .setVisible(false);
+    this.menuDeath
+      .add(this.resume)
+      .add(this.replayDeath)
+      .add(this.menuDeat)
       .setVisible(false);
 
     this.menusettings = new Phaser.GameObjects.Group();
@@ -184,7 +220,7 @@ export default class Bootloader extends Phaser.Scene {
           .on("pointerover", () => (this.change[0 + i * 2].alpha = 0.8))
           .on("pointerout", () => (this.change[0 + i * 2].alpha = 1))
       );
-      console.log(this.initialkeys[i].length);
+      //   console.log(this.initialkeys[i].length);
       this.change.push(
         this.add
           .text(700, 345 + i * 29.4, this.initialkeys[i], {
@@ -219,6 +255,20 @@ export default class Bootloader extends Phaser.Scene {
     this.anterior = -1;
   }
 
+  deathPaiton = () => {
+    console.log((this.paiton.lifebar.visible = false));
+    this.paiton.lifebar.visible = false;
+    this.paiton.powerbar.visible = false;
+    this.paiton.vida.visible = false;
+    this.paiton.energia.visible = false;
+    this.paiton.lifebol.visible = false;
+    this.paiton.powerbol.visible = false;
+    this.paiton.destroy();
+    this.pause.setVisible(false);
+    this.gamePaused = true;
+    this.input.stopPropagation();
+    this.menuDeath.setVisible(true);
+  };
   pauseall() {
     this.pause.setScale(0.4, 0.4);
     setTimeout(() => {
@@ -326,6 +376,7 @@ export default class Bootloader extends Phaser.Scene {
   }
 
   update() {
+    // console.log(this.paiton.get);
     if (!this.gamePaused) {
       this.paiton.update();
       this.bowser.update();
