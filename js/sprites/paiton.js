@@ -33,13 +33,17 @@ export default class Paiton extends Phaser.Physics.Arcade.Sprite {
     this.saltando = false;
     this.recargando = false;
 
-    this.live = 20;
+    this.live = 160;
     this.vida = null;
     this.energy = 200;
     this.energia = null;
 
     this.killed = false;
     this.versus = false;
+
+    this.maxlife = 160;
+    this.maxenergy = 200;
+
   }
 
   preload() {
@@ -145,13 +149,20 @@ export default class Paiton extends Phaser.Physics.Arcade.Sprite {
     this.scene.add.image(50,40, 'life').setScale(0.05, 0.05).setScrollFactor(0).setDepth(400);
     this.scene.add.image(50,80, 'power').setScale(0.05, 0.05).setScrollFactor(0).setDepth(400);
 
-    this.lifebar = this.scene.add.graphics({ fillStyle: { color: 0xf00000 } }).setScrollFactor(0);
-    this.lifebar.fillRoundedRect(60, 40, 350, 10, 5) 
-
-    this.powerbar = this.scene.add.graphics({ fillStyle: { color: 0xffeb00 } }).setScrollFactor(0); 
-    this.powerbar.fillRoundedRect(60, 80, 250, 10, 5)
+    this.lifebar = this.scene.add.graphics({ fillStyle: { color: 0xf00000 } }).setScrollFactor(0).fillRoundedRect(60, 40, 350, 10, 5) 
+    this.powerbar = this.scene.add.graphics({ fillStyle: { color: 0xffeb00 } }).setScrollFactor(0).fillRoundedRect(60, 80, 250, 10, 5)
   }
-
+  modifybar = (lp, baja) =>{ 
+    if(lp==0){
+      this.lifebar.destroy()
+      this.lifebar = this.scene.add.graphics({ fillStyle: { color: 0xf00000 } }).setScrollFactor(0).fillRoundedRect(60, 40, baja, 10, 5) 
+    } else if(lp==1){
+      this.powerbar.destroy()
+      this.powerbar = this.scene.add.graphics({ fillStyle: { color: 0xffeb00 } }).setScrollFactor(0).fillRoundedRect(60, 80, baja, 10, 5)
+   }
+    
+    
+  }
   sobrepiso() {
     return this.paiton.body.onFloor();
   }
@@ -218,7 +229,7 @@ export default class Paiton extends Phaser.Physics.Arcade.Sprite {
     localStorage.setItem("vidas", this.scene.intentos - 1);
   }
   update() {
-    //console.log(this.paiton.body.velocity.x)
+    console.log(this.barwidth);
     if (!this.killed) {
       if (!this.versus) {
         if (this.izquierda.isDown) {
@@ -266,13 +277,18 @@ export default class Paiton extends Phaser.Physics.Arcade.Sprite {
   }
   collectCoin = (player, coin) => {
     coin.destroy(coin.x, coin.y); // remove the tile/coin
-    this.live = this.live + 20; // increment the score
+    
+    if(this.live*350/this.maxlife<350){
+      this.live = this.live + 20;  
+      this.modifybar(0, this.live*350/this.maxlife)
+    } 
     this.vida.setText(`Vida: ${this.live}`); // set the text to show the current score
   };
 
   handleVida() {
     if (this.live > 0) {
       this.live = this.live - 20;
+      this.modifybar(0, this.live*350/this.maxlife)
     } else if (this.live == 0) {
       this.killed = true;
     }
@@ -280,6 +296,7 @@ export default class Paiton extends Phaser.Physics.Arcade.Sprite {
   }
   handlePower() {
     this.energy -= 8;
+    this.modifybar(1, this.energy*250/this.maxenergy)
     this.energia.setText(`Energia: ${this.energy}`);
   }
 }
