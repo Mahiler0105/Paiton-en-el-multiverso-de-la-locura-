@@ -1,21 +1,14 @@
 import Powered from "../power.js";
-
-var arrayKey = localStorage.getItem("keys");
-var arrayKeys = arrayKey.split(",");
-
-export default class Paiton extends Phaser.Physics.Arcade.Sprite {
+export default class Paiton extends Phaser.Physics.Arcade.Sprite {  
+  
   constructor(scene, x, y) {
     super(scene, x, y, "paiton");
     this.scene = scene;
     this.x = x;
     this.y = y;
     this.paiton = new Phaser.Physics.Arcade.Sprite(this.scene);
+    this.arrayKeys = localStorage.getItem("keys").split(",");    
 
-    this.derecha = this.scene.input.keyboard.addKey(parseInt(arrayKeys[2]));
-    this.izquierda = this.scene.input.keyboard.addKey(parseInt(arrayKeys[0]));
-    this.arriba = this.scene.input.keyboard.addKey(parseInt(arrayKeys[1]));
-    this.abajo = this.scene.input.keyboard.addKey(parseInt(arrayKeys[3]));
-    this.ataca = this.scene.input.keyboard.addKey(parseInt(arrayKeys[4]));
     this.velocidad = 350;
     this.alturaSalto = -350;
 
@@ -44,6 +37,12 @@ export default class Paiton extends Phaser.Physics.Arcade.Sprite {
     this.scene.load.image("power", "powerbottle.png");
   }
   create() {
+    this.izquierda = this.scene.input.keyboard.addKey(parseInt(this.arrayKeys[0]));
+    this.arriba = this.scene.input.keyboard.addKey(parseInt(this.arrayKeys[1]));
+    this.derecha = this.scene.input.keyboard.addKey(parseInt(this.arrayKeys[2]));
+    this.abajo = this.scene.input.keyboard.addKey(parseInt(this.arrayKeys[3]));
+    this.ataca = this.scene.input.keyboard.addKey(parseInt(this.arrayKeys[4]));
+
     this.paiton = this.scene.physics.add.sprite(
       this.x,
       this.y,
@@ -208,7 +207,6 @@ export default class Paiton extends Phaser.Physics.Arcade.Sprite {
 
   reaccionar = () => {
     if (!this.versus) {
-      console.log("hola");
       this.versus = true;
       this.handleVida();
     }
@@ -216,11 +214,6 @@ export default class Paiton extends Phaser.Physics.Arcade.Sprite {
   chocado() {
     if (this.versus) {
       this.saltando = true;
-
-      console.log(this.scene.bowser.direccion);
-
-      // this.paiton.setVelocityX();
-      // this.paiton.setVelocityY(-350);
       this.soltarpoder();
       this.paiton.setVelocity(this.scene.bowser.direccion * 350, -350);
     }
@@ -233,11 +226,10 @@ export default class Paiton extends Phaser.Physics.Arcade.Sprite {
   morir() {
     this.paiton.anims.play("killeado", true);
     this.paiton.setVelocityX(0);
-    this.paiton.once("killeado", () => {
-      console.log("animationcomplete");
-    });
-    localStorage.setItem("vidas", this.scene.intentos - 1);
-    this.scene.deathPaiton(false);
+    setTimeout(() => {
+      this.scene.deathPaiton(false);
+    }, 500);
+    
   }
   update() {
     let arrayKey = localStorage.getItem("keys");
@@ -247,7 +239,7 @@ export default class Paiton extends Phaser.Physics.Arcade.Sprite {
     this.arriba = this.scene.input.keyboard.addKey(parseInt(arrayKeys[1]));
     this.abajo = this.scene.input.keyboard.addKey(parseInt(arrayKeys[3]));
     this.ataca = this.scene.input.keyboard.addKey(parseInt(arrayKeys[4]));
-    console.log(this.barwidth);
+    
     if (!this.killed) {
       if (!this.versus) {
         if (this.izquierda.isDown) {
@@ -305,11 +297,11 @@ export default class Paiton extends Phaser.Physics.Arcade.Sprite {
 
   handleVida() {
     if (this.live > 0) {
-      this.live = this.live - 20;
+      this.live -= 20;
       this.modifybar(0, (this.live * 350) / this.maxlife);
-    } else if (this.live == 0) {
-      this.killed = true;
-    }
+
+      if(this.live ==0) this.killed = true;
+    } 
     this.vida.setText(`Vida: ${this.live}`);
   }
   handlePower() {

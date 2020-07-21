@@ -30,7 +30,7 @@ export default class Loading extends Phaser.Scene {
                 setTimeout(() => {
                     console.log("Iniciando Bootloader");
                     this.goboot();
-                }, 100);
+                }, 5000);
                 break;
             case 1:
                 setTimeout(() => {

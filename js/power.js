@@ -39,6 +39,7 @@ class Fireball extends Phaser.Physics.Arcade.Sprite {
   destruir = () => {
     this.scene.bowser.handleLife(false, true);
     this.destroy(true);
+    this.particles.destroy(true);
     console.log("jose jose");
   };
   update() {

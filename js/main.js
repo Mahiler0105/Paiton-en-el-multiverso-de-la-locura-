@@ -50,4 +50,5 @@ let actualLife = localStorage.getItem("vidas");
 if (actualLife == undefined) localStorage.setItem("vidas", 3);
 
 let initialkeys = [65, 87, 68, 83, 70];
-let keys = localStorage.setItem("keys", initialkeys);
+let keys = localStorage.getItem("keys");
+if(keys == undefined) localStorage.setItem("keys", initialkeys);
