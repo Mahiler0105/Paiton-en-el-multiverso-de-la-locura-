@@ -17,3 +17,11 @@ Integrantes del proyecto
 
 ### PRIMER NIVEL
 ![paiton2](https://user-images.githubusercontent.com/33855347/87728931-c0f5c280-c789-11ea-96a3-8adfaa079dd8.PNG)
+
+## INSTALACIóN Juego
+- Version de node.js >= 12.18.2 
+- Ejecutar comando npm install en el Path del proyecto 
+- Correrlo en servidor local
+
+## EJECUCIÓN Automatizacion Pruebas
+- npm cypress open
