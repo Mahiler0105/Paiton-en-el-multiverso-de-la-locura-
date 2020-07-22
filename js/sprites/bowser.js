@@ -10,8 +10,9 @@ export default class Bowser {
     this.hurt = false;
     this.atacando = false;
 
-    this.life = 10;
+    this.life = 1000;
     this.vida = null;
+    this.killed = false
   }
   preload() {
     this.scene.load.path = "../../img/";
@@ -193,60 +194,67 @@ export default class Bowser {
     this.ataquelegido = false;
   }
   update() {
-    //console.log(this.scene.paiton.paiton.body.velocity.x);
-
-    var distance = this.bowser.body.x - this.scene.paiton.paiton.body.x;
-
-    if (distance > 800 || distance < -800) {
-      this.estatico();
-      this.direccion = 0;
-      this.mostrado = false;
-      this.handleLife(true, false);
-    } else {
-      if (!this.mostrado) {
-        this.handleLife(false, false);
-        this.mostrado = true;
-      }
-
-      if (distance > 100 || distance < -160) {
-        distance > 0 ? (this.direccion = -1) : (this.direccion = 1);
-
-        if (!this.hurt) this.moverse(this.direccion);
-        else {
-          this.herido();
-          setTimeout(() => {
-            this.hurt = false;
-          }, 1000);
-          this.bowser.setVelocityX(0);
-        }
+    if(this.killed ==false){
+      var distance = this.bowser.body.x - this.scene.paiton.paiton.body.x;
+      if (distance > 800 || distance < -800) {
+        this.estatico();
+        this.direccion = 0;
+        this.mostrado = false;
+        this.handleLife(true, false);
       } else {
-        let ataque;
-        if (!this.ataquelegido) {
-          ataque = Math.round(Math.random() * 2);
-          this.ataquelegido = true;
+        if (!this.mostrado) {
+          this.handleLife(false, false);
+          this.mostrado = true;
         }
-        if (!this.atacando) {
-          //console.log(ataque)
-          this.punch(ataque, distance);
-
-          // this.direccion = 0
-          this.bowser.setVelocityX(0);
-          this.atacando = true;
+  
+        if (distance > 100 || distance < -160) {
+          distance > 0 ? (this.direccion = -1) : (this.direccion = 1);
+  
+          if (!this.hurt) this.moverse(this.direccion);
+          else {
+            this.herido();
+            setTimeout(() => {
+              this.hurt = false;
+            }, 1000);
+            this.bowser.setVelocityX(0);
+          }
+        } else {
+          let ataque;
+          if (!this.ataquelegido) {
+            ataque = Math.round(Math.random() * 2);
+            this.ataquelegido = true;
+          }
+          if (!this.atacando) {
+            //console.log(ataque)
+            this.punch(ataque, distance);
+  
+            // this.direccion = 0
+            this.bowser.setVelocityX(0);
+            this.atacando = true;
+          }        
         }
-
-        //this.lanzafuego()
-        //Math.round(Math.random() * 3)
       }
+    } else if(this.killed==true){
+      this.muerto()
+      setTimeout(() => {
+        this.bowser.destroy(true)
+        this.killed = null
+        this.vida.destroy()
+      }, 1500);
+    }else{
+      console.log('hi');
     }
-    //console.log(distance)
+    
   }
   handleLife = (away, danorecibido) => {
-    if (danorecibido) {
+    if (danorecibido) {      
       this.life -= Math.round(Math.random() * 10);
       this.hurt = true;
+      if (this.life <= 0) this.killed = true     
     }
     this.vida.setText(away ? "" : `Vida: ${this.life}`);
   };
+  
   estatico() {
     this.bowser.anims.play("idle", true);
     this.bowser.setVelocityX(0);

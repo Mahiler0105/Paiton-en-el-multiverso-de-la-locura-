@@ -20,14 +20,14 @@ export default class Paiton extends Phaser.Physics.Arcade.Sprite {
 
     this.live = 160;
     this.vida = null;
-    this.energy = 200;
+    this.energy = 500;
     this.energia = null;
 
     this.killed = false;
     this.versus = false;
 
     this.maxlife = 160;
-    this.maxenergy = 200;
+    this.maxenergy = 500;
   }
 
   preload() {

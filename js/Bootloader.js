@@ -21,6 +21,9 @@ export default class Bootloader extends Phaser.Scene {
         this.load.image("configure", "settings-tab.png");
         this.load.image("lose", "lose-tab.png");
         this.load.image("nolife", "nolife-tab.png");
+        
+        this.load.image("win", "win-tab.png");
+
 
         this.load.atlas("fire", "fire.png", "fire.json");
         this.load.atlas("ball", "ball.png", "ball.json");
@@ -43,6 +46,7 @@ export default class Bootloader extends Phaser.Scene {
         this.cameras.main.setBounds(0, 0, this.mapa.widthInPixels, this.mapa.heightInPixels);
         this.tilesets = this.mapa.addTilesetImage("si-bicubic", "tiles");
         this.foraje = this.mapa.createDynamicLayer("complementario", this.tilesets, 0, 0);
+        this.foraje.setCollisionByProperty({ final: true });
         this.solidos = this.mapa.createDynamicLayer("solidos", this.tilesets, 0, 0);
         this.solidos.setCollisionByProperty({ solido: true });
 
@@ -66,6 +70,7 @@ export default class Bootloader extends Phaser.Scene {
         this.mar.setCollisionByProperty({ mar: true });
 
         this.physics.add.collider(this.paiton.paiton, this.mar, this.deathPaiton, null, this);
+        this.physics.add.collider(this.paiton.paiton,this.foraje,this.win,null,this);
         this.physics.add.collider(this.paiton.paiton, this.solidos);
         this.physics.add.collider(this.paiton.paiton, this.coin, this.paiton.collectCoin, null, this);
         this.cameras.main.startFollow(this.paiton.paiton, true, 50, 50, 50, 200);
@@ -135,6 +140,23 @@ export default class Bootloader extends Phaser.Scene {
         this.nolife = this.add.image(600, 300, "nolife").setScale(0.5, 0.5).setScrollFactor(0);
         this.menudeath.add(this.lose).add(this.nolife).add(this.replay).add(this.menu).setVisible(false);
 
+        this.menuWin = new Phaser.GameObjects.Group();
+        this.winer = this.add
+          .image(600, 300, "win")
+          .setScale(0.5, 0.5)
+          .setScrollFactor(0);
+    
+        this.replayWin = this.add
+          .image(600, 470, "controls-design", "61.png")
+          .setInteractive()
+          .setScale(0.4, 0.4)
+          .on("pointerdown", () => this.replayall(true))
+          .on("pointerover", () => (this.replayWin.alpha = 0.8))
+          .on("pointerout", () => (this.replayWin.alpha = 1))
+          .setScrollFactor(0);
+        this.menuWin.add(this.winer).add(this.replayWin).setVisible(false);
+    
+       
         this.menusettings = new Phaser.GameObjects.Group();
         this.configure = this.add.image(600, 300, "configure").setScale(0.6, 0.6).setScrollFactor(0);
         this.passmovil = this.add
@@ -181,7 +203,13 @@ export default class Bootloader extends Phaser.Scene {
         this.anterior = -1;
         this.killed = false
     }
-
+    win = () => {
+        this.gamePaused = true;
+        this.pause.setVisible(false);
+        this.input.stopPropagation();
+        this.menuWin.setVisible(true);
+        this.killed = true;
+    };
     deathPaiton = (kind = true) => {
       if(!this.killed){
         if (kind) {
@@ -243,14 +271,18 @@ export default class Bootloader extends Phaser.Scene {
             }
         }, 100);
     }
-    replayall() {
-        console.log("Recargando por boton");
-
+    replayall(tipe = false) {
+        if (tipe) {
+            this.replayWin.setScale(0.3, 0.3);
+            setTimeout(() => {
+              this.replayWin.setScale(0.4, 0.4);
+            }, 100);
+        }else {
         this.replay.setScale(0.5, 0.5);
         setTimeout(() => {
             this.replay.setScale(0.6, 0.6);
         }, 100);
-
+        }
         this.cameras.main.fade(500, 0, 0, 0);
         setTimeout(() => {
             this.scene.switch("Loading");
